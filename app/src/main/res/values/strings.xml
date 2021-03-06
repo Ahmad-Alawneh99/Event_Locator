@@ -1,3 +1,29 @@
 <resources>
     <string name="app_name">Event Locator</string>
+    <string name="welcome">Welcome</string>
+    <string name="sign_up">Sign up</string>
+    <string name="login">Login</string>
+    <string name="email_hint">Email</string>
+    <string name="password_hint">Password</string>
+    <string name="wrong_email_and_or_password_error">Wrong email and/or password</string>
+    <string name="email_cant_be_empty_error">Email can\'t be empty</string>
+    <string name="invalid_email_error">Invalid Email address</string>
+    <string name="password_cant_be_empty_error">Password can\'t be empty</string>
+    <string name="first_name">First name</string>
+    <string name="last_name">Last name</string>
+    <string name="confirm_password_hint">Confirm password</string>
+    <string name="city">City</string>
+    <string name="preferred_event_categories_select_all_that_apply">Preferred event categories (select all that apply)</string>
+    <string name="sports">Sports</string>
+    <string name="volunteering">Volunteering</string>
+    <string name="entertainment">Entertainment</string>
+    <string name="educational">Educational</string>
+    <string name="name_contains_numbers_error">Name can\'t contain numbers</string>
+    <string name="last_name_empty_error">Last name can\'t be empty</string>
+    <string name="last_name_max_length_error">Last name can\'t contain more than 16 characters</string>
+    <string name="first_name_empty_error">First name can\'t be empty</string>
+    <string name="first_name_max_length_error">First name can\'t contain more than 16 characters</string>
+    <string name="passwords_dont_match_error">Passwords don\'t match</string>
+    <string name="password_length_error">Passwords must be within 8 – 16 characters</string>
+    <string name="passwords_contents_error">Passwords must contain at least one letter and one number</string>
 </resources>

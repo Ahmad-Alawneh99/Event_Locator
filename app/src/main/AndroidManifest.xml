@@ -9,7 +9,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocator">
-        <activity android:name=".MainActivity">
+        <activity android:name=".ui.SignUpActivity"></activity>
+        <activity android:name=".ui.LoginActivity" />
+        <activity android:name=".ui.WelcomeActivity" />
+        <activity android:name=".ui.EventsActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
