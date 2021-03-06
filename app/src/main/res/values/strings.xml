@@ -26,4 +26,5 @@
     <string name="passwords_dont_match_error">Passwords don\'t match</string>
     <string name="password_length_error">Passwords must be within 8 – 16 characters</string>
     <string name="passwords_contents_error">Passwords must contain at least one letter and one number</string>
+    <string name="upcoming_events">Upcoming events</string>
 </resources>
