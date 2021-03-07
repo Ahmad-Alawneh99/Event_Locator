@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/dmiEditProfile"
+        android:title="@string/edit_profile"
+        android:icon="@drawable/ic_baseline_settings_24"/>
+
+    <item
+        android:id="@+id/dmiMyEvents"
+        android:title="@string/my_events"
+        android:icon="@drawable/ic_baseline_placeholder_24"/>
+
+    <item
+        android:id="@+id/dmiFollowedOrganizers"
+        android:title="@string/followed_organizers"
+        android:icon="@drawable/ic_baseline_placeholder_24"/>
+
+    <item
+        android:id="@+id/dmiLogout"
+        android:title="@string/logout"
+        android:icon="@drawable/ic_baseline_placeholder_24"/>
+
+    <!-- TODO: get better icons -->
+</menu>

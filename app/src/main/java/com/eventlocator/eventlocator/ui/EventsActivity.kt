@@ -3,6 +3,7 @@ package com.eventlocator.eventlocator.ui
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Toast
+import androidx.core.view.GravityCompat
 import androidx.viewpager2.widget.ViewPager2
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.adapters.UpcomingEventsPagerAdapter
@@ -15,6 +16,10 @@ class EventsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        binding.mtbToolbar.setNavigationOnClickListener {
+            binding.dlParticipant.openDrawer(GravityCompat.START)
+        }
 
 
         val pagerAdapter = UpcomingEventsPagerAdapter(this, 2)

@@ -27,4 +27,12 @@
     <string name="password_length_error">Passwords must be within 8 – 16 characters</string>
     <string name="passwords_contents_error">Passwords must contain at least one letter and one number</string>
     <string name="upcoming_events">Upcoming events</string>
+    <string name="edit_profile">Edit profile</string>
+    <string name="my_events">My events</string>
+    <string name="followed_organizers">Followed organizers</string>
+    <string name="logout">Logout</string>
+    <string name="change_password">Change password</string>
+    <string name="update_email">Update email</string>
+    <string name="save_changes">Save Changes</string>
+    <string name="save">Save</string>
 </resources>
