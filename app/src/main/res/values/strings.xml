@@ -35,4 +35,12 @@
     <string name="update_email">Update email</string>
     <string name="save_changes">Save Changes</string>
     <string name="save">Save</string>
+    <string name="previous_events">Previous events</string>
+    <string name="canceled_events">Canceled events</string>
+    <string name="followers">Followers</string>
+    <string name="follow">Follow</string>
+    <string name="view_events">View events</string>
+    <string name="email">Email</string>
+    <string name="about_the_organizer">About the organizer</string>
+    <string name="social_media_accounts">Social media accounts</string>
 </resources>

@@ -4,7 +4,6 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".ui.EventsActivity"
     android:id="@+id/dlParticipant"
     android:layout_gravity="start">
 
@@ -24,7 +23,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical"
-                app:title="@string/my_events"
+                app:title="Events"
                 app:navigationIcon="@drawable/ic_baseline_menu_24"
                 style="@style/Widget.MaterialComponents.Toolbar.PrimarySurface"
                 android:background="@android:color/transparent"
