@@ -1,5 +1,6 @@
 package com.eventlocator.eventlocator.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -7,7 +8,13 @@ import android.text.TextWatcher
 import android.widget.TextView
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.databinding.ActivityLoginBinding
+import com.eventlocator.eventlocator.retrofit.ParticipantService
+import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
+import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
 import com.eventlocator.eventlocator.utilities.Utils
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class LoginActivity : AppCompatActivity() {
     lateinit var binding: ActivityLoginBinding
@@ -17,7 +24,28 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnLogin.isEnabled = false
         binding.btnLogin.setOnClickListener {
-            //TODO: handle log in
+            val credentials = ArrayList<String>()
+            credentials.add(binding.etEmail.text.toString())
+            credentials.add(binding.etPassword.text.toString())
+
+            RetrofitServiceFactory.createService(ParticipantService::class.java)
+                .login(credentials).enqueue(object: Callback<String> {
+                    override fun onResponse(call: Call<String>, response: Response<String>) {
+                        val sharedPreferenceEditor = getSharedPreferences(
+                            SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                        sharedPreferenceEditor.putString(
+                            SharedPreferenceManager.instance.TOKEN_KEY,
+                            response.body()
+                        )
+                        sharedPreferenceEditor.apply()
+                        startActivity(Intent(applicationContext, EventsActivity::class.java))
+                    }
+
+                    override fun onFailure(call: Call<String>, t: Throwable) {
+                        //TODO: Handle failure
+                    }
+
+                })
         }
 
         binding.etEmail.addTextChangedListener(object : TextWatcher {

@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.databinding.ActivityWelcomeBinding
+import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
 
 class WelcomeActivity : AppCompatActivity() {
     lateinit var binding: ActivityWelcomeBinding
@@ -12,11 +13,22 @@ class WelcomeActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityWelcomeBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        val sharedPreferences = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+
+        if (sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
+            startActivity(Intent(this, EventsActivity::class.java))
+        }
+
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(SharedPreferenceManager.instance.FIRST_TIME_KEY, false)
+        editor.apply()
+
         binding.btnLogin.setOnClickListener {
             startActivity(Intent(this, LoginActivity::class.java))
         }
         binding.btnSignUp.setOnClickListener {
-            Intent(this, SignUpActivity::class.java)
+            startActivity(Intent(this, SignUpActivity::class.java))
         }
     }
 }

@@ -106,6 +106,7 @@
                 android:layout_marginBottom="8dp">
 
                 <AutoCompleteTextView
+                    android:id="@+id/acCityMenu"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="none" />

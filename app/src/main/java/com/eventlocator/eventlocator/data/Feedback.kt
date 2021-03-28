@@ -1,4 +1,4 @@
 package com.eventlocator.eventlocator.data
 
-class Feedback {
+class Feedback(var rating: Double, var feedback: String) {
 }

@@ -4,21 +4,65 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import com.eventlocator.eventlocator.R
+import com.eventlocator.eventlocator.data.Participant
 import com.eventlocator.eventlocator.databinding.ActivitySignUpBinding
+import com.eventlocator.eventlocator.retrofit.ParticipantService
+import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
+import com.eventlocator.eventlocator.utilities.EventCategory
 import com.eventlocator.eventlocator.utilities.Utils
+import okhttp3.ResponseBody
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class SignUpActivity : AppCompatActivity() {
     lateinit var binding: ActivitySignUpBinding
+    lateinit var cities: List<String>
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivitySignUpBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        cities = listOf(getString(R.string.Amman),getString(R.string.Zarqa),getString(R.string.Balqa)
+            ,getString(R.string.Madaba),getString(R.string.Irbid),getString(R.string.Mafraq)
+            ,getString(R.string.Jerash),getString(R.string.Ajloun),getString(R.string.Karak)
+            ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
+
         binding.btnSignUp.isEnabled = false
         binding.btnSignUp.setOnClickListener {
-            //TODO: handle next step
+
+            val categories = ArrayList<Int>()
+            if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
+            if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
+            if (binding.cbVolunteering.isChecked) categories.add(EventCategory.VOLUNTEERING.ordinal)
+            if (binding.cbSports.isChecked) categories.add(EventCategory.SPORTS.ordinal)
+
+            val city = cities.indexOf(binding.acCityMenu.text.toString())
+
+            val participant = Participant(binding.etEmail.text.toString(),
+                binding.etFirstName.text.toString(),
+                binding.etLastName.text.toString(),
+                binding.etPassword.text.toString(),
+                5.0,
+                city,
+                categories)
+
+            //TODO: add call to partial sign up here
+
+            RetrofitServiceFactory.createService(ParticipantService::class.java)
+                .createParticipant(participant).enqueue(object: Callback<ResponseBody>{
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        //TODO: Check code and return to login activity
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        //TODO: Handle failure
+                    }
+
+                })
         }
 
         binding.etEmail.addTextChangedListener(object : TextWatcher {
@@ -221,6 +265,9 @@ class SignUpActivity : AppCompatActivity() {
                 updateSignUpButton()
             }
         }
+
+        val adapter = ArrayAdapter(this, R.layout.city_list_item, cities)
+        binding.acCityMenu.setAdapter(adapter)
     }
 
     fun updateSignUpButton(){

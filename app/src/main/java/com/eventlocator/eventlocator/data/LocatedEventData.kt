@@ -1,4 +1,4 @@
 package com.eventlocator.eventlocator.data
 
-class LocatedEventData {
+class LocatedEventData(var city: Int, var location: ArrayList<Double>) {
 }

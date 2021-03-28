@@ -71,4 +71,16 @@
     <string name="organizers_name_hint">Organizer\'s name…</string>
     <string name="event_type">Event type</string>
     <string name="day_of_the_week">Day of the week</string>
+    <string name="Amman">Amman</string>
+    <string name="Zarqa">Al-Zarqa</string>
+    <string name="Balqa">Al-Balqa</string>
+    <string name="Madaba">Madaba</string>
+    <string name="Irbid">Irbid</string>
+    <string name="Mafraq">Al-Mafraq</string>
+    <string name="Jerash">Jerash</string>
+    <string name="Ajloun">Ajloun</string>
+    <string name="Karak">Al-Karak</string>
+    <string name="Aqaba">Al-Aqaba</string>
+    <string name="Maan">Ma\'an</string>
+    <string name="Tafila">Al-Tafila</string>
 </resources>
