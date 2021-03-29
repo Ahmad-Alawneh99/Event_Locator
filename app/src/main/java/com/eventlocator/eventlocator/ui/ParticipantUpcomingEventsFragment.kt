@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.adapters.OrganizerUpcomingEventAdapter
+import com.eventlocator.eventlocator.adapters.ParticipantUpcomingEventAdapter
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.FragmentEventsBinding
 import com.eventlocator.eventlocator.utilities.DateTimeFormat
@@ -16,7 +17,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class OrganizerUpcomingEventsFragment(val events: ArrayList<Event>): Fragment() {
+class ParticipantUpcomingEventsFragment(val events: ArrayList<Event>): Fragment() {
 
     lateinit var binding: FragmentEventsBinding
 
@@ -30,7 +31,7 @@ class OrganizerUpcomingEventsFragment(val events: ArrayList<Event>): Fragment() 
         val status = ArrayList<String>()
         for(i in 0 until events.size){
             val registrationCloseDateTime = LocalDateTime.parse(events[i].registrationCloseDateTime,
-                            DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
+                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
             val startDate = LocalDate.parse(events[i].startDate,
                     DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
             val startDateTime = startDate.atTime(LocalTime.parse(events[i].sessions[0].startTime,
@@ -61,16 +62,15 @@ class OrganizerUpcomingEventsFragment(val events: ArrayList<Event>): Fragment() 
                 if (!found){
                     status.add(getString(R.string.active))
                 }
-                    //TODO: Add full
+                //TODO: Add full
             }
 
         }
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvents.layoutManager = layoutManager
 
-        val adapter = OrganizerUpcomingEventAdapter(events, status)
+        val adapter = ParticipantUpcomingEventAdapter(events, status)
         binding.rvEvents.adapter = adapter
         binding.rvEvents.adapter!!.notifyDataSetChanged()
     }
-
 }

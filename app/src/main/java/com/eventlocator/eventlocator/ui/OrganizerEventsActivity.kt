@@ -5,7 +5,6 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.eventlocator.eventlocator.R
-import com.eventlocator.eventlocator.adapters.MyEventsPagerAdapter
 import com.eventlocator.eventlocator.adapters.OrganizerEventsPagerAdapter
 import com.eventlocator.eventlocator.databinding.ActivityEventsBinding
 import com.google.android.material.tabs.TabLayoutMediator
@@ -17,8 +16,8 @@ class OrganizerEventsActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
-
-        val pagerAdapter = OrganizerEventsPagerAdapter(this, 3)
+        //TODO: Get data from backend
+        val pagerAdapter = OrganizerEventsPagerAdapter(this, 3, ArrayList())
         binding.pagerEvents.adapter = pagerAdapter
         TabLayoutMediator(binding.tlEvents, binding.pagerEvents) { tab, position ->
             when (position) {

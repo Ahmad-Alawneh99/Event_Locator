@@ -28,7 +28,7 @@ class EventsActivity : AppCompatActivity() {
         TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
             when (position){
                 0 -> tab.text = getString(R.string.upcoming_events)
-                1 -> tab.text = "Temp"
+                1 -> tab.text = getString(R.string.upcoming_events_by_followed_organizers)
             }
 
         }.attach()

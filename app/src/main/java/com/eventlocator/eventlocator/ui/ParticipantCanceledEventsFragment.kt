@@ -10,8 +10,9 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocator.adapters.OrganizerCanceledEventAdapter
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.FragmentEventsBinding
+import com.eventlocator.eventlocator.databinding.FragmentEventsWithFilteringBinding
 
-class OrganizerCanceledEventsFragment(val events: ArrayList<Event>): Fragment() {
+class ParticipantCanceledEventsFragment(val events: ArrayList<Event>): Fragment() {
 
     lateinit var binding: FragmentEventsBinding
 

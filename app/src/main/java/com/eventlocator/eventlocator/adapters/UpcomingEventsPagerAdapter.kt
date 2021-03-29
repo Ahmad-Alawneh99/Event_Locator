@@ -7,7 +7,7 @@ import androidx.viewpager2.adapter.FragmentStateAdapter
 import com.eventlocator.eventlocator.ui.UpcomingEventsByFollowedOrganizersFragment
 import com.eventlocator.eventlocator.ui.UpcomingEventsFragment
 
-class UpcomingEventsPagerAdapter( fa: FragmentActivity, var numberOfTabs: Int): FragmentStateAdapter(fa) {
+class UpcomingEventsPagerAdapter(fa: FragmentActivity, var numberOfTabs: Int): FragmentStateAdapter(fa) {
 
     override fun getItemCount(): Int {
         return numberOfTabs

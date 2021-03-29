@@ -6,11 +6,11 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.viewpager2.widget.ViewPager2
 import com.eventlocator.eventlocator.R
-import com.eventlocator.eventlocator.adapters.MyEventsPagerAdapter
+import com.eventlocator.eventlocator.adapters.ParticipantEventsPagerAdapter
 import com.eventlocator.eventlocator.databinding.ActivityEventsBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
-class MyEventsActivity : AppCompatActivity() {
+class ParticipantEventsActivity : AppCompatActivity() {
     lateinit var binding: ActivityEventsBinding
     //var filterFragment: FilterPreviousEventsFragment? = null
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -18,7 +18,8 @@ class MyEventsActivity : AppCompatActivity() {
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val pagerAdapter = MyEventsPagerAdapter(this, 3)
+        //TODO: Add call to backend
+        val pagerAdapter = ParticipantEventsPagerAdapter(this, 3, ArrayList())
         binding.pagerEvents.adapter = pagerAdapter
         TabLayoutMediator(binding.tlEvents, binding.pagerEvents) { tab, position ->
             when (position) {

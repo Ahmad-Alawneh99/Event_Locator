@@ -5,14 +5,15 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
-import com.eventlocator.eventlocator.databinding.FragmentPreviousEventsBinding
+import com.eventlocator.eventlocator.data.Event
+import com.eventlocator.eventlocator.databinding.FragmentEventsWithFilteringBinding
 
-class OrganizerPreviousEventsFragment: Fragment() {
+class OrganizerPreviousEventsFragment(val events: ArrayList<Event>): Fragment() {
 
-    lateinit var binding: FragmentPreviousEventsBinding
+    lateinit var binding: FragmentEventsWithFilteringBinding
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
-        binding = FragmentPreviousEventsBinding.inflate(layoutInflater, container, false)
+        binding = FragmentEventsWithFilteringBinding.inflate(layoutInflater, container, false)
         return binding.root
     }
 
