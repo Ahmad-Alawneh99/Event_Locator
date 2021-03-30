@@ -9,8 +9,8 @@
 
     <ImageView
         android:id="@+id/ivOrgImage"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="128dp"
+        android:layout_height="128dp"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
         android:adjustViewBounds="true"
@@ -20,7 +20,7 @@
         android:minHeight="128dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:srcCompat="@drawable/bomber" />
+        app:srcCompat="@drawable/avatar" />
 
     <Button
         android:id="@+id/btnFollowOrUnfollow"
@@ -119,8 +119,54 @@
                 android:layout_height="wrap_content"
                 android:text="@string/social_media_accounts"
                 android:textSize="@dimen/large_label" />
-            <!-- TODO: add icons representing all platforms -->
 
+            <LinearLayout
+                android:id="@+id/llSocialMedia"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/ivFacebook"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/facebook"/>
+
+                <ImageView
+                    android:id="@+id/ivYoutube"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/youtube"/>
+
+                <ImageView
+                    android:id="@+id/ivInstagram"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/instagram"/>
+
+                <ImageView
+                    android:id="@+id/ivTwitter"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/twitter"/>
+
+                <ImageView
+                    android:id="@+id/ivLinkedIn"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:layout_marginEnd="8dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/linkedin"/>
+
+            </LinearLayout>
 
         </LinearLayout>
     </ScrollView>

@@ -8,7 +8,7 @@ import retrofit2.http.Path
 
 interface OrganizerService {
 
-    @GET("/participants/organizers/getAll")
+    @GET("/participants/organizers/all")
     fun getOrganizers(): Call<ArrayList<Organizer>>
 
     @GET("/participants/organizer/{id}")

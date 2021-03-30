@@ -21,6 +21,7 @@ class EventsActivity : AppCompatActivity() {
             binding.dlParticipant.openDrawer(GravityCompat.START)
         }
 
+        //TODO: Do the thing for rating events
 
         val pagerAdapter = UpcomingEventsPagerAdapter(this, 2)
         binding.pagerEvents.adapter = pagerAdapter
