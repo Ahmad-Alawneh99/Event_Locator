@@ -8,15 +8,22 @@ import com.eventlocator.eventlocator.ui.UpcomingEventsByFollowedOrganizersFragme
 import com.eventlocator.eventlocator.ui.UpcomingEventsFragment
 
 class UpcomingEventsPagerAdapter(fa: FragmentActivity, var numberOfTabs: Int): FragmentStateAdapter(fa) {
-
+    lateinit var upcomingEventsFragment: UpcomingEventsFragment
+    lateinit var upcomingEventsByFollowedOrganizersFragment: UpcomingEventsByFollowedOrganizersFragment
     override fun getItemCount(): Int {
         return numberOfTabs
     }
 
     override fun createFragment(position: Int): Fragment {
         when(position){
-            0 -> return UpcomingEventsFragment()
-            1 -> return UpcomingEventsByFollowedOrganizersFragment()
+            0 -> {
+                upcomingEventsFragment = UpcomingEventsFragment()
+                return upcomingEventsFragment
+            }
+            1 -> {
+                upcomingEventsByFollowedOrganizersFragment = UpcomingEventsByFollowedOrganizersFragment()
+                return upcomingEventsByFollowedOrganizersFragment
+            }
         }
         return UpcomingEventsFragment()
     }

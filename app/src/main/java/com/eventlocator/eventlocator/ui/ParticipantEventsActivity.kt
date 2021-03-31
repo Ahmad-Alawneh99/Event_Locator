@@ -20,7 +20,7 @@ import retrofit2.Retrofit
 
 class ParticipantEventsActivity : AppCompatActivity() {
     lateinit var binding: ActivityEventsBinding
-    //var filterFragment: FilterPreviousEventsFragment? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
@@ -62,39 +62,6 @@ class ParticipantEventsActivity : AppCompatActivity() {
 
                 })
 
-
-
-
-
     }
 
-   /* override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
-        menu?.clear()
-        menu?.add(1, 1, Menu.NONE, "Filter").also { item ->
-            item?.icon = ContextCompat.getDrawable(this, R.drawable.ic_temp)
-            item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
-        }
-        return super.onPrepareOptionsMenu(menu)
-    }
-
-    override fun onOptionsItemSelected(item: MenuItem): Boolean {
-        when (item.itemId) {
-            1 -> {
-                if (filterFragment == null) {
-                    filterFragment = FilterPreviousEventsFragment(ArrayList())
-                    supportFragmentManager.commit {
-                        setReorderingAllowed(true)
-                        add(R.id.fvFilter, filterFragment!!)
-                    }
-                } else {
-                    supportFragmentManager.commit {
-                        remove(filterFragment!!)
-                        filterFragment = null
-                    }
-                }
-                return true
-            }
-        }
-        return super.onOptionsItemSelected(item)
-    }*/
 }

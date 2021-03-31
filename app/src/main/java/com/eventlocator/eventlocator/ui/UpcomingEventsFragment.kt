@@ -23,7 +23,7 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
 
-class UpcomingEventsFragment: Fragment() {
+class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
 
     lateinit var binding: FragmentEventsWithFilteringBinding
     lateinit var events: ArrayList<Event>
@@ -34,6 +34,7 @@ class UpcomingEventsFragment: Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        (activity as EventsActivity).onUpcomingEventsReady = this
         val token = requireContext().getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE,
         Context.MODE_PRIVATE).getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
@@ -41,7 +42,7 @@ class UpcomingEventsFragment: Fragment() {
                     override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
                         //TODO: Check response codes
                         events = response.body()!!
-                        val status = getStatusForAllEvents()
+                        val status = getStatusForEvents(events)
                         val initialEvents = ArrayList<Event>()
                         val initialStatus = ArrayList<String>()
                         //TODO: Display events based on preference and city
@@ -70,7 +71,7 @@ class UpcomingEventsFragment: Fragment() {
     }
 
 
-    fun getStatusForAllEvents(): ArrayList<String> {
+    fun getStatusForEvents(events: ArrayList<Event>): ArrayList<String> {
         val status = ArrayList<String>()
         for (i in 0 until events.size) {
             val registrationCloseDateTime = LocalDateTime.parse(events[i].registrationCloseDateTime,
@@ -106,6 +107,13 @@ class UpcomingEventsFragment: Fragment() {
             //TODO: Add for full events
         }
         return status
+    }
+
+    override fun sendUpcomingEvents(upcomingEvents: ArrayList<Event>) {
+        val status = getStatusForEvents(upcomingEvents)
+        val adapter = UpcomingEventAdapter(upcomingEvents, status)
+        binding.rvEvents.adapter = adapter
+        binding.rvEvents.adapter!!.notifyDataSetChanged()
     }
 
 }

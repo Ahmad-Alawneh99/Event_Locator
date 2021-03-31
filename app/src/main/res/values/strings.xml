@@ -89,4 +89,11 @@
     <string name="session_happening_right_now">A session is happening right now!</string>
     <string name="active">Active</string>
     <string name="upcoming_events_by_followed_organizers">Upcoming events by followed organizers</string>
+    <string name="sunday">Sunday</string>
+    <string name="monday">Monday</string>
+    <string name="tuesday">Tuesday</string>
+    <string name="wednesday">Wednesday</string>
+    <string name="thursday">Thursday</string>
+    <string name="friday">Friday</string>
+    <string name="saturday">Saturday</string>
 </resources>

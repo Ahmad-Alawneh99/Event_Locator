@@ -80,18 +80,19 @@ class Utils {
         return res.trim()
     }
 
-//    fun differenceBetweenTimesInMinutes(h1: Int, m1:Int, h2: Int, m2: Int): Int{
-//        var h1Temp = h1
-//        var h2Temp = h2
-//        var m1Temp = m1
-//        var m2Temp = m2
-//        if (m2Temp < m1Temp){
-//            h2Temp--
-//            m2Temp+=60
-//        }
-//        var res = (h2Temp - h1Temp) * 60
-//        res += m2Temp - m1Temp
-//        return res
-//    }
+    fun getLongestCommonSubsequenceLength(s1: String, s2: String): Int{
+        val matrix = Array(s1.length+1) {IntArray(s2.length+1) {0}}
 
+        for(i in 0 until s1.length){
+            for(j in 0 until s2.length){
+                if (i==0 || j==0)
+                    matrix[i][j] = 0
+                else if (s1[i] == s2[j])
+                    matrix[i][j] = matrix[i-1][j-1] + 1
+                else
+                    matrix[i][j] = Math.max(matrix[i][j-1], matrix[i-1][j])
+            }
+        }
+        return matrix[s1.length][s2.length]
+    }
 }
