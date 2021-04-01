@@ -48,8 +48,7 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
                         //TODO: Display events based on preference and city
                         for(i in 0 until events.size){
                             if (status[i]!=getString(R.string.registration_closed) &&
-                                    status[i] != "FULL" /*TODO: ADD FULL*/
-                                    && status[i] != getString(R.string.active)) {
+                                    status[i] != "FULL" /*TODO: ADD FULL*/) {
                                 initialEvents.add(events[i])
                                 initialStatus.add(status[i])
                             }

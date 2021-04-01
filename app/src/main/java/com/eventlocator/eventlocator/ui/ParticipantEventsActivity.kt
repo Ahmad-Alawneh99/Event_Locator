@@ -26,6 +26,11 @@ class ParticipantEventsActivity : AppCompatActivity() {
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        getAndLoadEvents()
+
+    }
+
+    private fun getAndLoadEvents(){
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
 
@@ -61,7 +66,6 @@ class ParticipantEventsActivity : AppCompatActivity() {
                     }
 
                 })
-
     }
 
 }

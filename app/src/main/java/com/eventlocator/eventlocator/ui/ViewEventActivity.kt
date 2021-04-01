@@ -5,16 +5,14 @@ import android.location.Geocoder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
+import android.view.View
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.data.Session
 import com.eventlocator.eventlocator.databinding.ActivityViewEventBinding
 import com.eventlocator.eventlocator.retrofit.EventService
 import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
-import com.eventlocator.eventlocator.utilities.DateTimeFormat
-import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
-import com.eventlocator.eventlocator.utilities.EventCategory
-import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
+import com.eventlocator.eventlocator.utilities.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -47,7 +45,7 @@ class ViewEventActivity : AppCompatActivity() {
         getAndLoadEvent()
     }
 
-    fun getAndLoadEvent(){
+    private fun getAndLoadEvent(){
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
@@ -56,6 +54,20 @@ class ViewEventActivity : AppCompatActivity() {
                         //TODO: Check request codes
                         event = response.body()!!
                         loadEvent()
+                        if (!isRegistrationClosed() && !event.isParticipantRegistered){
+                            binding.btnAction.text = getString(R.string.register)
+                            //TODO: set click listener for registration
+                        }
+                        else if (event.isParticipantRegistered){
+                            val eventStartDate = LocalDate.parse(event.startDate,
+                                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
+                            val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(event.sessions[0].startTime,
+                                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
+                            if (eventStartDateTime.minusHours(12).isAfter(LocalDateTime.now())){
+                                binding.btnAction.text = getString(R.string.register)
+                                //TODO: set click listener to cancel registration
+                            }
+                        }
                     }
 
                     override fun onFailure(call: Call<Event>, t: Throwable) {
@@ -71,11 +83,14 @@ class ViewEventActivity : AppCompatActivity() {
         val startDateFormatted = LocalDate.parse(event.startDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
         val endDateFormatted = LocalDate.parse(event.endDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
 
+        //TODO: set click listener to open organizer profile
+        binding.tvOrganizerName.text = event.organizerName
+
         binding.tvEventName.text = event.name
         binding.tvEventDate.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(startDateFormatted) + " - " + DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(endDateFormatted)
-        binding.tvRating.text = if(isFinished())event.rating.toString()
+        binding.tvEventRating.text = if(isFinished())event.rating.toString()
         else "This event didn't finish yet"
         binding.tvEventStatus.text = getEventStatus()
         binding.tvDescription.text = event.description
@@ -126,20 +141,33 @@ class ViewEventActivity : AppCompatActivity() {
 
     private fun getEventStatus(): String{
         //TODO: Change to fit participant
-        if (isCanceled()){
-            return "This event is canceled"
+        return if (isCanceled()){
+            "This event is canceled"
         }
         else if (isFinished()){
-            return "This event has finished"
+            "This event has finished"
         }
         else if (isRegistrationClosed()){
-            return "Registration closed"
+            "Registration closed"
         }
         else if (getCurrentSession()!=null){
-            return "Session #"+getCurrentSession()!!.id+" is happening now"
+            "Session #"+getCurrentSession()!!.id+" is happening now"
         }
         else{
-            return "This event is active"
+            "This event is active"
+        }
+    }
+
+    private fun getParticipantStatus(): String{
+        if (event.hasParticipantAttended == ParticipantAttendanceStatus.TRUE.ordinal){
+            return "You attended this event"
+        }
+        else if (event.isParticipantRegistered){
+            return "You are registered in this event"
+        }
+        else{
+            binding.tvParticipantStatus.visibility = View.GONE
+            return ""
         }
     }
 

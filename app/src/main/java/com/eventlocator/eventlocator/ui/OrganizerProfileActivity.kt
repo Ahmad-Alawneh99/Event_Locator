@@ -12,8 +12,10 @@ import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.data.Organizer
 import com.eventlocator.eventlocator.databinding.ActivityOrganizerProfileBinding
 import com.eventlocator.eventlocator.retrofit.OrganizerService
+import com.eventlocator.eventlocator.retrofit.ParticipantService
 import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -40,7 +42,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
     }
 
 
-    fun getAndLoadOrganizer(){
+    private fun getAndLoadOrganizer(){
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
 
@@ -59,7 +61,14 @@ class OrganizerProfileActivity : AppCompatActivity() {
                             binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
                                     ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
                         }
-                        //TODO: Handle follow/unfollow
+                        if(organizer.isFollowedByCurrentParticipant){
+                            binding.btnFollowOrUnfollow.text = getString(R.string.unfollow)
+                            binding.btnFollowOrUnfollow.setOnClickListener { unfollowOrganizer() }
+                        }
+                        else{
+                            binding.btnFollowOrUnfollow.text = getString(R.string.follow)
+                            binding.btnFollowOrUnfollow.setOnClickListener { followOrganizer() }
+                        }
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {
@@ -155,5 +164,40 @@ class OrganizerProfileActivity : AppCompatActivity() {
             }
         }
         if (organizer.socialMediaAccounts.size<5) binding.ivLinkedIn.visibility = View.GONE
+    }
+
+    fun followOrganizer(){
+        val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+        RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java, token!!)
+                .followOrganizer(organizerID).enqueue(object: Callback<ResponseBody>{
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        //TODO Handle success
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        //TODO: Handle failure
+                    }
+
+                })
+
+
+    }
+
+    fun unfollowOrganizer(){
+        val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+        RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java, token!!)
+                .unfollowOrganizer(organizerID).enqueue(object: Callback<ResponseBody>{
+                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                        //TODO Handle success
+                    }
+
+                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
+                        //TODO: Handle failure
+                    }
+
+                })
+
     }
 }

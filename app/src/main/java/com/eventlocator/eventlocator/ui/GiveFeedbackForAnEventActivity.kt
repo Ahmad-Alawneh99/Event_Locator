@@ -4,7 +4,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.eventlocator.eventlocator.databinding.ActivityGiveFeedbackForAnEventBinding
 
-class GiveFeedbackForAnEvent : AppCompatActivity() {
+class GiveFeedbackForAnEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityGiveFeedbackForAnEventBinding
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

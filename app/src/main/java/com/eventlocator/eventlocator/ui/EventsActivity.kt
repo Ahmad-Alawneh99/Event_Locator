@@ -8,6 +8,7 @@ import androidx.viewpager2.widget.ViewPager2
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.adapters.UpcomingEventsPagerAdapter
 import com.eventlocator.eventlocator.data.Event
+import com.eventlocator.eventlocator.data.Participant
 import com.eventlocator.eventlocator.databinding.ActivityEventsBinding
 import com.google.android.material.tabs.TabLayoutMediator
 
@@ -15,6 +16,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
     lateinit var binding: ActivityEventsBinding
     lateinit var onUpcomingEventsReady: OnUpcomingEventsReady
     lateinit var onUpcomingEventsByFollowedOrganizersReady: OnUpcomingEventsByFollowedOrganizersReady
+    lateinit var participant: Participant
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)

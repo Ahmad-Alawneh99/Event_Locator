@@ -25,7 +25,7 @@
         android:textSize="22sp"
         android:layout_marginStart="@dimen/et_start_end_margin"
         android:layout_marginEnd="@dimen/et_start_end_margin"
-        android:text="Placeholder Placeholder Placeholder"/>
+        android:text=""/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -44,7 +44,7 @@
             android:id="@+id/tvEventDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="69/69/2069 - 69/69/3069"
+            android:text=""
             android:textSize="@dimen/larger_label"/>
     </LinearLayout>
     <LinearLayout
@@ -64,22 +64,39 @@
             android:id="@+id/tvEventStatus"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Status"
+            android:text=""
+            android:textSize="@dimen/larger_label"/>
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginStart="@dimen/et_start_end_margin"
+        android:layout_marginEnd="@dimen/et_start_end_margin">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rating2"
+            android:layout_marginEnd="4dp"
+            android:textSize="@dimen/larger_label"/>
+
+        <TextView
+            android:id="@+id/tvEventRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
             android:textSize="@dimen/larger_label"/>
     </LinearLayout>
     <TextView
-        android:id="@+id/tvRating"
-        android:layout_width="wrap_content"
+        android:id="@+id/tvParticipantStatus"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Rating (Placeholder)"
-        android:textSize="@dimen/larger_label"
-
-        android:layout_marginStart="@dimen/et_start_end_margin"/>
+        android:textSize="@dimen/large_label"/>
     <Button
         android:id="@+id/btnAction"
         android:layout_width="match_parent"
         android:layout_height="@dimen/main_button_height"
-        android:text="Action(placeholder)"
+        android:text="Register"
         android:textSize="@dimen/button_size"
         android:minHeight="0dp"
         android:insetTop="0dp"
@@ -101,12 +118,24 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/large_label"
+                android:text="@string/organized_by"/>
+            <TextView
+                android:id="@+id/tvOrganizerName"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text=""
+                android:layout_marginBottom="16dp"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/large_label"
                 android:text="@string/description"/>
             <TextView
                 android:id="@+id/tvDescription"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Text Text Text Text Text Text Text Text Text Text Text Text Text Text"
+                android:text=""
                 android:layout_marginBottom="16dp"/>
 
             <TextView
@@ -138,7 +167,7 @@
                     android:id="@+id/tvCity"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="City" />
+                    android:text="" />
             </LinearLayout>
 
             <LinearLayout
@@ -157,7 +186,7 @@
                     android:id="@+id/tvLocation"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="@string/tap_to_view_location"/>
+                    android:text=""/>
             </LinearLayout>
 
             <LinearLayout
@@ -176,7 +205,7 @@
                     android:id="@+id/tvRegistrationCloseDateTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="24/24/2424 12:00 AM"/>
+                    android:text=""/>
             </LinearLayout>
 
             <TextView
@@ -188,7 +217,7 @@
                 android:id="@+id/tvCategories"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Educational, Entertainment, etc"
+                android:text=""
                 android:layout_marginBottom="16dp"/>
 
             <LinearLayout
@@ -207,7 +236,7 @@
                     android:id="@+id/tvCancellationDateTime"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="24/24/2424 12:00 AM"/>
+                    android:text=""/>
             </LinearLayout>
 
             <TextView
@@ -219,7 +248,7 @@
                 android:id="@+id/tvCancellationReason"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Reason Reason Reason Reason Reason Reason Reason Reason Reason Reason Reason "
+                android:text=""
                 android:layout_marginBottom="16dp"/>
 
         </LinearLayout>
