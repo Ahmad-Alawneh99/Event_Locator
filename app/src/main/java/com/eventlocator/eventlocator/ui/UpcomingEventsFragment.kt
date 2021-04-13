@@ -5,28 +5,34 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.adapters.UpcomingEventAdapter
 import com.eventlocator.eventlocator.data.Event
+import com.eventlocator.eventlocator.data.Participant
 import com.eventlocator.eventlocator.databinding.FragmentEventsWithFilteringBinding
 import com.eventlocator.eventlocator.retrofit.EventService
 import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocator.utilities.DateTimeFormat
 import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
 import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
+import com.eventlocator.eventlocator.utilities.Utils
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.util.*
+import kotlin.collections.ArrayList
 
 class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
 
     lateinit var binding: FragmentEventsWithFilteringBinding
     lateinit var events: ArrayList<Event>
+    lateinit var participant: Participant
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentEventsWithFilteringBinding.inflate(layoutInflater, container, false)
         return binding.root
@@ -35,42 +41,12 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as EventsActivity).onUpcomingEventsReady = this
-        val token = requireContext().getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE,
-        Context.MODE_PRIVATE).getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
-        RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
-                .getUpcomingEvents().enqueue(object: Callback<ArrayList<Event>>{
-                    override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
-                        //TODO: Check response codes
-                        events = response.body()!!
-                        val status = getStatusForEvents(events)
-                        val initialEvents = ArrayList<Event>()
-                        val initialStatus = ArrayList<String>()
-                        //TODO: Display events based on preference and city
-                        for(i in 0 until events.size){
-                            if (status[i]!=getString(R.string.registration_closed) &&
-                                    status[i] != "FULL" /*TODO: ADD FULL*/) {
-                                initialEvents.add(events[i])
-                                initialStatus.add(status[i])
-                            }
-
-                        }
-
-                        val adapter = UpcomingEventAdapter(initialEvents, initialStatus)
-                        val layoutManager = LinearLayoutManager(requireContext())
-                        binding.rvEvents.layoutManager = layoutManager
-                        binding.rvEvents.adapter = adapter
-
-                    }
-
-                    override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
-                        //TODO: Handle failure
-                    }
-
-                })
+        participant = (activity as EventsActivity).participant
+        getAndLoadEvents()
     }
 
 
-    fun getStatusForEvents(events: ArrayList<Event>): ArrayList<String> {
+    /*private fun getStatusForEvents(events: ArrayList<Event>): ArrayList<String> {
         val status = ArrayList<String>()
         for (i in 0 until events.size) {
             val registrationCloseDateTime = LocalDateTime.parse(events[i].registrationCloseDateTime,
@@ -80,7 +56,10 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
             val startDateTime = startDate.atTime(LocalTime.parse(events[i].sessions[0].startTime,
                     DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
             if (LocalDateTime.now().isBefore(registrationCloseDateTime)) {
-                status.add(getString(R.string.registration_ongoing))
+                if (events[i].currentNumberOfParticipants == events[i].maxParticipants){
+                    status.add(getString(R.string.event_full))
+                }
+                else status.add(getString(R.string.registration_ongoing))
             } else if (LocalDateTime.now().isBefore(startDateTime) && LocalDateTime.now().isAfter(registrationCloseDateTime)) {
                 status.add(getString(R.string.registration_closed))
             } else {
@@ -103,16 +82,68 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
                 }
             }
 
-            //TODO: Add for full events
         }
         return status
-    }
+    }*/
 
     override fun sendUpcomingEvents(upcomingEvents: ArrayList<Event>) {
-        val status = getStatusForEvents(upcomingEvents)
-        val adapter = UpcomingEventAdapter(upcomingEvents, status)
+        val adapter = UpcomingEventAdapter(upcomingEvents)
         binding.rvEvents.adapter = adapter
         binding.rvEvents.adapter!!.notifyDataSetChanged()
+    }
+
+    fun getAndLoadEvents(){
+        val token = requireContext().getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE,
+                Context.MODE_PRIVATE).getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+        RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
+                .getUpcomingEvents().enqueue(object: Callback<ArrayList<Event>>{
+                    override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
+                        if (response.code() == 202) {
+                            events = response.body()!!
+                            //val status = getStatusForEvents(events)
+                            val initialEvents = ArrayList<Event>()
+                            //val initialStatus = ArrayList<String>()
+                            for (i in 0 until events.size) {
+                                if (!events[i].isFull()
+                                        && !events[i].isRegistrationClosed()
+                                        && events[i].canceledEventData==null) {
+                                    if (!Collections.disjoint(events[i].categories, participant.preferredEventCategories)){
+                                        if (events[i].locatedEventData==null ||
+                                                events[i].locatedEventData!!.city == participant.city){
+                                            initialEvents.add(events[i])
+                                        }
+
+                                    }
+                                }
+                            }
+
+
+                            val adapter = UpcomingEventAdapter(initialEvents)
+                            val layoutManager = LinearLayoutManager(requireContext())
+                            binding.rvEvents.layoutManager = layoutManager
+                            binding.rvEvents.adapter = adapter
+                        }
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@UpcomingEventsFragment.requireContext()
+                                    , "Error", "401: Unauthorized access",true)
+                        }
+                        else if (response.code()==404){
+                            //TODO: Find a better way to do this
+                            Utils.instance.displayInformationalDialog(this@UpcomingEventsFragment.requireContext(),
+                                    "Error", "No events found",false)
+                        }
+                        else if (response.code()==500){
+                            Utils.instance.displayInformationalDialog(this@UpcomingEventsFragment.requireContext(),
+                                    "Error", "Server issue, please try again later",false)
+                        }
+
+                    }
+                    override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
+                        Utils.instance.displayInformationalDialog(this@UpcomingEventsFragment.requireContext(),
+                                "Error", "Can't connect to the server", false)
+                    }
+
+                })
     }
 
 }

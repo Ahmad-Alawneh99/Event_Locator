@@ -1,11 +1,13 @@
 package com.eventlocator.eventlocator.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.UpcomingEventParticipantsProfileBinding
+import com.eventlocator.eventlocator.ui.ViewEventActivity
 import com.eventlocator.eventlocator.utilities.DateTimeFormat
 import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
 import java.time.LocalDate
@@ -19,7 +21,11 @@ class ParticipantUpcomingEventAdapter(private val events: ArrayList<Event>, priv
             RecyclerView.ViewHolder(binding.root){
 
         init{
-            //TODO: Set click listener
+            binding.root.setOnClickListener {
+                val intent = Intent(context, ViewEventActivity::class.java)
+                intent.putExtra("eventID", binding.tvEventID.text.toString().toLong())
+                context.startActivity(intent)
+            }
         }
     }
 
@@ -31,7 +37,7 @@ class ParticipantUpcomingEventAdapter(private val events: ArrayList<Event>, priv
 
     override fun onBindViewHolder(holder: ParticipantUpcomingEventViewHolder, position: Int) {
         holder.binding.tvEventID.text = events[position].id.toString()
-        holder.binding.tvEventName.text = events[position].id.toString()
+        holder.binding.tvEventName.text = events[position].name
         holder.binding.tvOrganizerName.text = events[position].organizerName
         val startDate = LocalDate.parse(events[position].startDate,
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))

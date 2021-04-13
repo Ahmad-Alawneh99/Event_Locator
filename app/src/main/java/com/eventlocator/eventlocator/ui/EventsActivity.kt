@@ -1,34 +1,163 @@
 package com.eventlocator.eventlocator.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.Menu
+import android.view.MenuItem
+import android.widget.TextView
 import android.widget.Toast
+import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.commit
 import androidx.viewpager2.widget.ViewPager2
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.adapters.UpcomingEventsPagerAdapter
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.data.Participant
 import com.eventlocator.eventlocator.databinding.ActivityEventsBinding
+import com.eventlocator.eventlocator.retrofit.ParticipantService
+import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
+import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
+import com.eventlocator.eventlocator.utilities.Utils
 import com.google.android.material.tabs.TabLayoutMediator
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcomingEventsByFollowedOrganizersFiltered {
     lateinit var binding: ActivityEventsBinding
     lateinit var onUpcomingEventsReady: OnUpcomingEventsReady
     lateinit var onUpcomingEventsByFollowedOrganizersReady: OnUpcomingEventsByFollowedOrganizersReady
     lateinit var participant: Participant
+    lateinit var pagerAdapter: UpcomingEventsPagerAdapter
+    var filterFragment: Fragment? = null
+    var currentPosition = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        setSupportActionBar(binding.mtbToolbar)
 
+        val sharedPreferences = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+        if (sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
+            startActivity(Intent(this, WelcomeActivity::class.java))
+            finish()
+        }
+        else if (sharedPreferences.getString(SharedPreferenceManager.instance.TOKEN_KEY,"") ==""){
+            startActivity(Intent(this,LoginActivity::class.java))
+            finish()
+        }
+        else {
+            getParticipantAndLoadEvents()
+        }
+    }
+
+    override fun getUpcomingEvents(upcomingEvents: ArrayList<Event>) {
+        onUpcomingEventsReady.sendUpcomingEvents(upcomingEvents)
+        supportFragmentManager.commit {
+            remove(filterFragment!!)
+            filterFragment = null
+        }
+    }
+
+    override fun getUpcomingEventsByFollowedOrganizers(upcomingEvents: ArrayList<Event>) {
+        onUpcomingEventsByFollowedOrganizersReady.sendUpcomingEventsByFollowedOrganizers(upcomingEvents)
+        supportFragmentManager.commit {
+            remove(filterFragment!!)
+            filterFragment = null
+        }
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val a = Intent(Intent.ACTION_MAIN)
+        a.addCategory(Intent.CATEGORY_HOME)
+        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(a)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        //TODO: add a button to achieve this instead of having it automatically change
+        //pagerAdapter.requestEventsUpdate()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menu!!.add(1,1,1,"Filter").also { item ->
+            item?.icon = ContextCompat.getDrawable(this, R.drawable.ic_temp)
+            item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        }
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            1 -> {
+                if (filterFragment!=null){
+                    supportFragmentManager.commit {
+                        remove(filterFragment!!)
+                        filterFragment = null
+                    }
+                }
+                else{
+                    if (currentPosition == 0){
+                        filterFragment = FilterUpcomingEventsFragment(pagerAdapter.upcomingEventsFragment.events)
+                        supportFragmentManager.commit {
+                            add(R.id.fvFilter,filterFragment!!)
+                        }
+                    }
+                    else{
+                        filterFragment = FilterUpcomingEventsByFollowedOrganizersFragment(pagerAdapter.upcomingEventsFragment.events)
+                        supportFragmentManager.commit {
+                            add(R.id.fvFilter,filterFragment!!)
+                        }
+                    }
+                }
+                return true
+            }
+            else -> return false
+        }
+    }
+
+    private fun getParticipantAndLoadEvents(){
+        val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+        RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java,token!!)
+                .getParticipantInfo().enqueue(object : Callback<Participant> {
+                    override fun onResponse(call: Call<Participant>, response: Response<Participant>) {
+                        Toast.makeText(this@EventsActivity, response.code().toString(), Toast.LENGTH_SHORT).show()
+                        if (response.code() == 202) {
+                            participant = response.body()!!
+                            loadEvents()
+                        } else if (response.code() == 401) {
+                            Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
+                                    "401: Unauthorized access", true)
+                        } else if (response.code() == 404) {
+                            Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
+                                    "404: Information not found", true)
+                        } else if (response.code() == 500) {
+                            Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
+                                    "Server issue, please try again later", false)
+                        }
+                    }
+
+                    override fun onFailure(call: Call<Participant>, t: Throwable) {
+                        Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
+                                "Can't connect to the server", false)
+                    }
+
+                })
+    }
+
+    fun loadEvents(){
         binding.mtbToolbar.setNavigationOnClickListener {
             binding.dlParticipant.openDrawer(GravityCompat.START)
         }
-
-        //TODO: Do the thing for rating events
-
-        val pagerAdapter = UpcomingEventsPagerAdapter(this, 2)
+        binding.nvParticipant.getHeaderView(0).findViewById<TextView>(R.id.tvParticipantName).text =
+                participant.firstName + " " + participant.lastName
+        pagerAdapter = UpcomingEventsPagerAdapter(this, 2)
         binding.pagerEvents.adapter = pagerAdapter
 
         TabLayoutMediator(binding.tlEvents, binding.pagerEvents){ tab, position ->
@@ -42,20 +171,58 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         binding.pagerEvents.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
-                Toast.makeText(applicationContext, "text", Toast.LENGTH_SHORT).show()
+                currentPosition = position
+                if (filterFragment!=null){
+                    supportFragmentManager.commit {
+                        remove(filterFragment!!)
+                        filterFragment = null
+                    }
+                }
             }
 
         })
 
+        binding.nvParticipant.setNavigationItemSelectedListener { item: MenuItem ->
+            when(item.itemId){
+                R.id.dmiMyEvents -> {
+                    startActivity(Intent(this, ParticipantEventsActivity::class.java))
+                    binding.root.closeDrawers()
+                    true
+                }
+                R.id.dmiFollowedOrganizers -> {
+                    startActivity(Intent(this, FollowedOrganizersActivity::class.java))
+                    binding.root.closeDrawers()
+                    true
+                }
+                R.id.dmiSearchOrganizers -> {
+                    startActivity(Intent(this, SearchOrganizersActivity::class.java))
+                    binding.root.closeDrawers()
+                    true
+                }
+                R.id.dmiEditProfile -> {
+                    //TODO: open get profile
+                    binding.root.closeDrawers()
+                    true
+                }
+                R.id.dmiLogout -> {
+                    val sharedPreferenceEditor =
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                    sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, null)
+                    sharedPreferenceEditor.apply()
+                    //TODO: add confirmation box for logout
+                    startActivity(Intent(this, LoginActivity::class.java))
+                    binding.root.closeDrawers()
+                    true
+                }
+                else -> {
+                    false
+                }
+
+            }
+
+        }
     }
 
-    override fun getUpcomingEvents(upcomingEvents: ArrayList<Event>) {
-        onUpcomingEventsReady.sendUpcomingEvents(upcomingEvents)
-    }
-
-    override fun getUpcomingEventsByFollowedOrganizers(upcomingEvents: ArrayList<Event>) {
-        onUpcomingEventsByFollowedOrganizersReady.sendUpcomingEventsByFollowedOrganizers(upcomingEvents)
-    }
 }
 
 interface OnUpcomingEventsReady{

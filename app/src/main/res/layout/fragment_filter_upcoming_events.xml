@@ -117,7 +117,9 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="@dimen/larger_label"
-        android:text="@string/day_of_the_week"/>
+        android:text="@string/day_of_the_week"
+        app:singleSelection="false"
+        app:selectionRequired="true"/>
 
     <com.google.android.material.chip.ChipGroup
         android:id="@+id/cgDayOfWeek"
@@ -132,6 +134,7 @@
             android:layout_height="wrap_content"
             android:text="@string/sunday"
             android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
         <com.google.android.material.chip.Chip
@@ -140,6 +143,7 @@
             android:layout_height="wrap_content"
             android:text="@string/monday"
             android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
         <com.google.android.material.chip.Chip
@@ -148,6 +152,7 @@
             android:layout_height="wrap_content"
             android:text="@string/tuesday"
             android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
         <com.google.android.material.chip.Chip
@@ -156,6 +161,7 @@
             android:layout_height="wrap_content"
             android:text="@string/wednesday"
             android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
         <com.google.android.material.chip.Chip
@@ -164,6 +170,7 @@
             android:layout_height="wrap_content"
             android:text="@string/thursday"
             android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
         <com.google.android.material.chip.Chip
@@ -172,6 +179,7 @@
             android:layout_height="wrap_content"
             android:text="@string/friday"
             android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
         <com.google.android.material.chip.Chip
@@ -180,6 +188,7 @@
             android:layout_height="wrap_content"
             android:text="@string/saturday"
             android:checkable="true"
+            android:checked="true"
             style="@style/Widget.MaterialComponents.Chip.Filter" />
 
     </com.google.android.material.chip.ChipGroup>
@@ -360,6 +369,18 @@
 
     </com.google.android.material.chip.ChipGroup>
 
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cbShowFullEvents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/show_full_events"/>
+
+    <com.google.android.material.checkbox.MaterialCheckBox
+        android:id="@+id/cbShowRegistrationClosedEvents"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/show_events_whose_registration_closed"/>
 
     <Button
         android:id="@+id/btnApply"

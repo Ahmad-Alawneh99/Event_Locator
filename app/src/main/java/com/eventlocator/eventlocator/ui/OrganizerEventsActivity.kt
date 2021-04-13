@@ -16,6 +16,7 @@ import com.eventlocator.eventlocator.retrofit.EventService
 import com.eventlocator.eventlocator.retrofit.OrganizerService
 import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
+import com.eventlocator.eventlocator.utilities.Utils
 import com.google.android.material.tabs.TabLayoutMediator
 import retrofit2.Call
 import retrofit2.Callback
@@ -42,40 +43,55 @@ class OrganizerEventsActivity : AppCompatActivity(), OnPreviousEventsFiltered {
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
                 .getOrganizerEvents(organizerID).enqueue(object: Callback<ArrayList<Event>> {
                     override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
-                        //TODO: Check response codes
-                        invalidateOptionsMenu()
-                        OrganizerEventsPagerAdapter(this@OrganizerEventsActivity, 3, response.body()!!)
-                        binding.pagerEvents.adapter = pagerAdapter
-                        TabLayoutMediator(binding.tlEvents, binding.pagerEvents) { tab, position ->
-                            when (position) {
-                                0 -> tab.text = getString(R.string.upcoming_events)
-                                1 -> tab.text = getString(R.string.previous_events)
-                                2 -> tab.text = getString(R.string.canceled_events)
-                            }
+                        if (response.code() == 202) {
+                            invalidateOptionsMenu()
+                            OrganizerEventsPagerAdapter(this@OrganizerEventsActivity, 3, response.body()!!)
+                            binding.pagerEvents.adapter = pagerAdapter
+                            TabLayoutMediator(binding.tlEvents, binding.pagerEvents) { tab, position ->
+                                when (position) {
+                                    0 -> tab.text = getString(R.string.upcoming_events)
+                                    1 -> tab.text = getString(R.string.previous_events)
+                                    2 -> tab.text = getString(R.string.canceled_events)
+                                }
 
-                        }.attach()
+                            }.attach()
 
-                        binding.pagerEvents.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
-                            override fun onPageSelected(position: Int) {
-                                super.onPageSelected(position)
-                                currentPosition = position
-                                invalidateOptionsMenu()
-                                if (position!=1 && filterFragment!=null){
-                                    supportFragmentManager.commit {
-                                        remove(filterFragment!!)
-                                        filterFragment = null
+                            binding.pagerEvents.registerOnPageChangeCallback(object : ViewPager2.OnPageChangeCallback() {
+                                override fun onPageSelected(position: Int) {
+                                    super.onPageSelected(position)
+                                    currentPosition = position
+                                    invalidateOptionsMenu()
+                                    if (position != 1 && filterFragment != null) {
+                                        supportFragmentManager.commit {
+                                            remove(filterFragment!!)
+                                            filterFragment = null
+                                        }
                                     }
                                 }
-                            }
 
-                        })
+                            })
+                        }
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@OrganizerEventsActivity, "Error",
+                                    "401: Unauthorized access",true)
+                        }
+                        else if (response.code() == 404) {
+                            Utils.instance.displayInformationalDialog(this@OrganizerEventsActivity,
+                                    "Error", "No events found", false)
+                        }
+                        else if (response.code() == 500) {
+                            Utils.instance.displayInformationalDialog(this@OrganizerEventsActivity,
+                                    "Error", "Server issue, please try again later", false)
+                        }
                     }
 
                     override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
-                        //TODO: Handle failure
+                        Utils.instance.displayInformationalDialog(this@OrganizerEventsActivity,
+                                "Error", "Can't connect to server", false)
                     }
 
                 })
+
     }
 
     override fun getPreviousEvents(previousEvents: ArrayList<Event>) {

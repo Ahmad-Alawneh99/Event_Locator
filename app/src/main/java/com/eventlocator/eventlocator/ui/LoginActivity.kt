@@ -5,7 +5,9 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.TextView
+import android.widget.Toast
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.databinding.ActivityLoginBinding
 import com.eventlocator.eventlocator.retrofit.ParticipantService
@@ -29,23 +31,34 @@ class LoginActivity : AppCompatActivity() {
             credentials.add(binding.etPassword.text.toString())
 
             RetrofitServiceFactory.createService(ParticipantService::class.java)
-                .login(credentials).enqueue(object: Callback<String> {
-                    override fun onResponse(call: Call<String>, response: Response<String>) {
-                        val sharedPreferenceEditor = getSharedPreferences(
-                            SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
-                        sharedPreferenceEditor.putString(
-                            SharedPreferenceManager.instance.TOKEN_KEY,
-                            response.body()
-                        )
-                        sharedPreferenceEditor.apply()
-                        startActivity(Intent(applicationContext, EventsActivity::class.java))
-                    }
+                .login(credentials).enqueue(object : Callback<String> {
+                        override fun onResponse(call: Call<String>, response: Response<String>) {
+                            if (response.code() == 202) {
+                                val sharedPreferenceEditor = getSharedPreferences(
+                                        SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                sharedPreferenceEditor.putString(
+                                        SharedPreferenceManager.instance.TOKEN_KEY,
+                                        response.body()
+                                )
+                                sharedPreferenceEditor.apply()
+                                binding.tvError.visibility = View.INVISIBLE
+                                startActivity(Intent(applicationContext, EventsActivity::class.java))
+                            } else if (response.code() == 404) {
+                                binding.tvError.visibility = View.VISIBLE
+                            } else if (response.code() == 500) {
+                                Utils.instance.displayInformationalDialog(this@LoginActivity, "Error",
+                                        "Server issue, please try again later", false)
+                                binding.tvError.visibility = View.INVISIBLE
+                            }
+                        }
 
-                    override fun onFailure(call: Call<String>, t: Throwable) {
-                        //TODO: Handle failure
-                    }
+                        override fun onFailure(call: Call<String>, t: Throwable) {
+                            Utils.instance.displayInformationalDialog(this@LoginActivity,
+                                    "Error", "Can't connect to the server", false)
+                            binding.tvError.visibility = View.INVISIBLE
+                        }
 
-                })
+                    })
         }
 
         binding.etEmail.addTextChangedListener(object : TextWatcher {
@@ -103,6 +116,10 @@ class LoginActivity : AppCompatActivity() {
                 binding.etPassword.setText(binding.etPassword.text.toString().trim(), TextView.BufferType.EDITABLE)
                 updateLoginButton()
             }
+        }
+
+        binding.tvNeedAccount.setOnClickListener{
+            startActivity(Intent(this, SignUpActivity::class.java))
         }
     }
 

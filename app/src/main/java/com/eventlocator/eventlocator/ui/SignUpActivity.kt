@@ -1,11 +1,13 @@
 package com.eventlocator.eventlocator.ui
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.widget.ArrayAdapter
 import android.widget.TextView
+import android.widget.Toast
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.data.Participant
 import com.eventlocator.eventlocator.databinding.ActivitySignUpBinding
@@ -34,6 +36,8 @@ class SignUpActivity : AppCompatActivity() {
         binding.btnSignUp.isEnabled = false
         binding.btnSignUp.setOnClickListener {
 
+
+            //TODO: make the categories and city required
             val categories = ArrayList<Int>()
             if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
             if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
@@ -50,16 +54,27 @@ class SignUpActivity : AppCompatActivity() {
                 city,
                 categories)
 
-            //TODO: add call to partial sign up here
 
             RetrofitServiceFactory.createService(ParticipantService::class.java)
                 .createParticipant(participant).enqueue(object: Callback<ResponseBody>{
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        //TODO: Check code and return to login activity
+                        if (response.code() == 201){
+                            startActivity(Intent(this@SignUpActivity, LoginActivity::class.java))
+                        }
+                        else if (response.code() == 409){
+                            Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
+                                    "Email already exists, please use a different email",false)
+                        }
+                        else if (response.code()==500){
+                            Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
+                                    "Server issue, please try again later",false)
+                        }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        //TODO: Handle failure
+                        Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
+                                "Can't connect to the server",false)
+
                     }
 
                 })
@@ -278,5 +293,13 @@ class SignUpActivity : AppCompatActivity() {
                 && binding.etPassword.text.toString().trim() == binding.etConfirmPassword.text.toString().trim()
                 && binding.tlPassword.error == null)
 
+    }
+
+    override fun onBackPressed() {
+        super.onBackPressed()
+        val a = Intent(Intent.ACTION_MAIN)
+        a.addCategory(Intent.CATEGORY_HOME)
+        a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
+        startActivity(a)
     }
 }

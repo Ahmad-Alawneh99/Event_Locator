@@ -1,10 +1,13 @@
 package com.eventlocator.eventlocator.utilities
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Context
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.net.Uri
 import android.os.ParcelFileDescriptor
+import com.google.android.material.datepicker.MaterialPickerOnPositiveButtonClickListener
 import java.io.FileDescriptor
 import java.io.IOException
 
@@ -83,16 +86,21 @@ class Utils {
     fun getLongestCommonSubsequenceLength(s1: String, s2: String): Int{
         val matrix = Array(s1.length+1) {IntArray(s2.length+1) {0}}
 
-        for(i in 0 until s1.length){
-            for(j in 0 until s2.length){
+        for(i in 1 .. s1.length){
+            for(j in 1 .. s2.length){
                 if (i==0 || j==0)
                     matrix[i][j] = 0
-                else if (s1[i] == s2[j])
+                else if (s1[i-1] == s2[j-1])
                     matrix[i][j] = matrix[i-1][j-1] + 1
                 else
                     matrix[i][j] = Math.max(matrix[i][j-1], matrix[i-1][j])
             }
         }
         return matrix[s1.length][s2.length]
+    }
+
+    fun displayInformationalDialog(context: Context, title: String, message:String, finish: Boolean){
+        AlertDialog.Builder(context).setTitle(title).setMessage(message).setPositiveButton("OK")
+        { di, i -> if (finish) (context as Activity).finish() }.create().show()
     }
 }

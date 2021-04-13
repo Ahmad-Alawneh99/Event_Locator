@@ -7,6 +7,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
 import android.view.View
+import android.widget.Toast
 import androidx.core.view.get
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.data.Organizer
@@ -15,6 +16,7 @@ import com.eventlocator.eventlocator.retrofit.OrganizerService
 import com.eventlocator.eventlocator.retrofit.ParticipantService
 import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocator.utilities.SharedPreferenceManager
+import com.eventlocator.eventlocator.utilities.Utils
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -32,7 +34,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
         binding = ActivityOrganizerProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         organizerID = intent.getLongExtra("organizerID",-1)
-        getAndLoadOrganizer()
+        //getAndLoadOrganizer()
 
     }
 
@@ -49,30 +51,43 @@ class OrganizerProfileActivity : AppCompatActivity() {
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
                 .getOrganizerById(organizerID).enqueue(object: Callback<Organizer>{
                     override fun onResponse(call: Call<Organizer>, response: Response<Organizer>) {
-                        //TODO: Check response code
-                        organizer = response.body()!!
-                        organizer = response.body()!!
-                        binding.tvOrgName.text = organizer.name
-                        binding.tvAbout.text = organizer.about
-                        binding.tvFollowers.text = organizer.numberOfFollowers.toString()
-                        binding.tvEmail.text = organizer.email
-                        setSocialMediaAccounts()
-                        if (organizer.image!="") {
-                            binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
-                                    ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                        if (response.code() == 202) {
+                            organizer = response.body()!!
+                            binding.tvOrgName.text = organizer.name
+                            binding.tvAbout.text = organizer.about
+                            binding.tvFollowers.text = organizer.numberOfFollowers.toString()
+                            binding.tvEmail.text = organizer.email
+                            binding.tvRating.text = organizer.rating.toString()
+                            setSocialMediaAccounts()
+                            if (organizer.image != "") {
+                                binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
+                                        ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                            }
+                            if (organizer.isFollowedByCurrentParticipant) {
+                                binding.btnFollowOrUnfollow.text = getString(R.string.unfollow)
+                                binding.btnFollowOrUnfollow.setOnClickListener { unfollowOrganizer() }
+                            } else {
+                                binding.btnFollowOrUnfollow.text = getString(R.string.follow)
+                                binding.btnFollowOrUnfollow.setOnClickListener { followOrganizer() }
+                            }
                         }
-                        if(organizer.isFollowedByCurrentParticipant){
-                            binding.btnFollowOrUnfollow.text = getString(R.string.unfollow)
-                            binding.btnFollowOrUnfollow.setOnClickListener { unfollowOrganizer() }
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity, "Error",
+                                    "401: Unauthorized access",true)
                         }
-                        else{
-                            binding.btnFollowOrUnfollow.text = getString(R.string.follow)
-                            binding.btnFollowOrUnfollow.setOnClickListener { followOrganizer() }
+                        else if (response.code() == 404){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "Organizer not found",true)
+                        }
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "Server issue, please try again later",true)
                         }
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {
-                        //TODO: Handle failure
+                        Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                "Error", "Can't connect to server",true)
                     }
 
                 })
@@ -172,11 +187,33 @@ class OrganizerProfileActivity : AppCompatActivity() {
         RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java, token!!)
                 .followOrganizer(organizerID).enqueue(object: Callback<ResponseBody>{
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        //TODO Handle success
+                        if (response.code()==200){
+                            organizer.isFollowedByCurrentParticipant = true
+                            binding.tvFollowers.text = (binding.tvFollowers.text.toString().toInt() + 1).toString()
+                            binding.btnFollowOrUnfollow.text = getString(R.string.unfollow)
+                            binding.btnFollowOrUnfollow.setOnClickListener { unfollowOrganizer() }
+                        }
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity, "Error",
+                                    "401: Unauthorized access",true)
+                        }
+                        else if (response.code() == 409){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "You already follow this organizer", true)
+                        }
+                        else if (response.code() == 406){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "organizer/participant not found", true)
+                        }
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "Server issue, please try again later", true)
+                        }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        //TODO: Handle failure
+                        Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                "Error", "Can't connect to server", true)
                     }
 
                 })
@@ -190,11 +227,34 @@ class OrganizerProfileActivity : AppCompatActivity() {
         RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java, token!!)
                 .unfollowOrganizer(organizerID).enqueue(object: Callback<ResponseBody>{
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        //TODO Handle success
+                        Toast.makeText(this@OrganizerProfileActivity, response.code().toString(), Toast.LENGTH_LONG).show()
+                        if (response.code()==200){
+                            organizer.isFollowedByCurrentParticipant = false
+                            binding.tvFollowers.text = (binding.tvFollowers.text.toString().toInt() - 1).toString()
+                            binding.btnFollowOrUnfollow.text = getString(R.string.follow)
+                            binding.btnFollowOrUnfollow.setOnClickListener { followOrganizer() }
+                        }
+                        else if (response.code()==401){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity, "Error",
+                                    "401: Unauthorized access",true)
+                        }
+                        else if (response.code() == 409){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "You already unfollowed this organizer", true)
+                        }
+                        else if (response.code() == 406){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "organizer/participant not found", true)
+                        }
+                        else if (response.code() == 500){
+                            Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                    "Error", "Server issue, please try again later", true)
+                        }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        //TODO: Handle failure
+                        Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
+                                "Error", "Can't connect to server", true)
                     }
 
                 })

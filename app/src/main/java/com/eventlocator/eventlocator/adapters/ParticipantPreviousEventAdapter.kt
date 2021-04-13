@@ -1,11 +1,13 @@
 package com.eventlocator.eventlocator.adapters
 
 import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.PreviousEventParticipantsProfileBinding
+import com.eventlocator.eventlocator.ui.ViewEventActivity
 import com.eventlocator.eventlocator.utilities.DateTimeFormat
 import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
 import java.time.LocalDate
@@ -18,7 +20,11 @@ class ParticipantPreviousEventAdapter(private val events: ArrayList<Event>):
     inner class ParticipantPreviousEventHolder(var binding: PreviousEventParticipantsProfileBinding):
             RecyclerView.ViewHolder(binding.root){
         init {
-            //TODO: Add click listener
+            binding.root.setOnClickListener {
+                val intent = Intent(context, ViewEventActivity::class.java)
+                intent.putExtra("eventID", binding.tvEventID.text.toString().toLong())
+                context.startActivity(intent)
+            }
         }
     }
 

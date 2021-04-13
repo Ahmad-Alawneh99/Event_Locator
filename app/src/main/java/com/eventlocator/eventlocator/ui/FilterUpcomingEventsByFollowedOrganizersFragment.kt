@@ -18,6 +18,7 @@ import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
 import com.google.android.material.chip.Chip
 import com.google.android.material.datepicker.CalendarConstraints
 import com.google.android.material.datepicker.DateValidatorPointBackward
+import com.google.android.material.datepicker.DateValidatorPointForward
 import com.google.android.material.datepicker.MaterialDatePicker
 import java.time.Instant
 import java.time.LocalDate
@@ -62,8 +63,11 @@ class FilterUpcomingEventsByFollowedOrganizersFragment(var events: ArrayList<Eve
             }
 
             for(i in 0 until binding.cgDayOfWeek.size){
-                if ((binding.cgCity[i] as Chip).isChecked){
-                    selectedDays.add(i)
+                if ((binding.cgDayOfWeek[i] as Chip).isChecked){
+                    if (i==0)
+                        selectedDays.add(6)
+                    else
+                        selectedDays.add(i-1)
                 }
             }
 
@@ -81,10 +85,15 @@ class FilterUpcomingEventsByFollowedOrganizersFragment(var events: ArrayList<Eve
             }
 
             if (binding.etEventName.text.toString().trim()!=""){
-                filter = EventNameFilter(binding.etEventName.text.toString().toString())
+                filter = EventNameFilter(binding.etEventName.text.toString().trim())
                 result = filter.apply(result)
             }
 
+            filter = RegistrationClosedFilter(binding.cbShowRegistrationClosedEvents.isChecked)
+            result = filter.apply(result)
+            filter = FullFilter(binding.cbShowFullEvents.isChecked)
+            result = filter.apply(result)
+            
             activity.getUpcomingEventsByFollowedOrganizers(result)
 
         }
@@ -99,10 +108,10 @@ class FilterUpcomingEventsByFollowedOrganizersFragment(var events: ArrayList<Eve
             val builder: MaterialDatePicker.Builder<Pair<Long, Long>> = MaterialDatePicker.Builder.dateRangePicker()
 
             val calendarConstraints = CalendarConstraints.Builder()
-            val endConstraint = LocalDate.now().atStartOfDay(ZoneId.systemDefault())
+            val startConstraint = LocalDate.now().atStartOfDay(ZoneId.systemDefault())
                     .toInstant().toEpochMilli()
-            calendarConstraints.setStart(endConstraint)
-            calendarConstraints.setValidator(DateValidatorPointBackward.before(endConstraint))
+            calendarConstraints.setStart(startConstraint)
+            calendarConstraints.setValidator(DateValidatorPointForward.from(startConstraint))
             builder.setCalendarConstraints(calendarConstraints.build())
             builder.setTitleText("Select start and end dates")
             val picker = builder.build()

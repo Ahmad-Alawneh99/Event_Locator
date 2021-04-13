@@ -21,10 +21,10 @@ interface EventService {
     @GET("/participants/events")
     fun getParticipantEvents(): Call<ArrayList<Event>>
 
-    @POST("/participants/event/register/{id}")
+    @POST("/participants/event/{id}/register")
     fun registerParticipantInEvent(@Path("id") eventID: Long): Call<ResponseBody>
 
-    @POST("/participants/event/unregister/{id}")
+    @POST("/participants/event/{id}/unregister")
     fun unregisterParticipantInEvent(@Path("id") eventID: Long): Call<ResponseBody>
 
 }

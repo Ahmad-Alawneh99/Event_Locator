@@ -1,20 +1,30 @@
 package com.eventlocator.eventlocator.adapters
 
 import android.content.Context
+import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.UpcomingEventBinding
+import com.eventlocator.eventlocator.ui.ViewEventActivity
 import com.eventlocator.eventlocator.utilities.DateTimeFormat
 import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
 import java.time.LocalDate
 
-class UpcomingEventAdapter(var events: ArrayList<Event>, var status: ArrayList<String>):
+class UpcomingEventAdapter(var events: ArrayList<Event>,):
         RecyclerView.Adapter<UpcomingEventAdapter.UpcomingEventHolder>() {
     lateinit var context: Context
     inner class UpcomingEventHolder(val binding: UpcomingEventBinding): RecyclerView.ViewHolder(binding.root){
-        //TODO: add on click on the root to open the activity
+
+        init {
+            binding.root.setOnClickListener {
+                val intent = Intent(context, ViewEventActivity::class.java)
+                intent.putExtra("eventID", binding.tvEventID.text.toString().toLong())
+                context.startActivity(intent)
+            }
+        }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UpcomingEventHolder {
@@ -34,7 +44,7 @@ class UpcomingEventAdapter(var events: ArrayList<Event>, var status: ArrayList<S
         holder.binding.tvEventDates.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
-        holder.binding.tvEventStatus.text = status[position]
+        holder.binding.tvEventStatus.text = events[position].getStatus()
     }
 
     override fun getItemCount(): Int {

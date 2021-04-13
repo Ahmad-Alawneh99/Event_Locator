@@ -16,7 +16,7 @@
         android:adjustViewBounds="true"
         android:scaleType="fitXY"
         android:layout_marginBottom="16dp"
-        android:src="@drawable/bomber"/>
+        android:src="@drawable/avatar"/>
 
     <TextView
         android:id="@+id/tvEventName"

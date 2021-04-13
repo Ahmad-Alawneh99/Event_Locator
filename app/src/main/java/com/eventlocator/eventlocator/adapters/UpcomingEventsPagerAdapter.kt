@@ -27,4 +27,13 @@ class UpcomingEventsPagerAdapter(fa: FragmentActivity, var numberOfTabs: Int): F
         }
         return UpcomingEventsFragment()
     }
+
+    fun requestEventsUpdate(){
+        if (this::upcomingEventsFragment.isInitialized){
+            upcomingEventsFragment.getAndLoadEvents()
+        }
+        if (this::upcomingEventsByFollowedOrganizersFragment.isInitialized){
+            upcomingEventsByFollowedOrganizersFragment.getAndLoadEvents()
+        }
+    }
 }

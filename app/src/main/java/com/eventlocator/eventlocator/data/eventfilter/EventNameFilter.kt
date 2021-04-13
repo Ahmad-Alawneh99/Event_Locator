@@ -8,7 +8,7 @@ class EventNameFilter(var query: String): Filter {
     override fun apply(events: ArrayList<Event>): ArrayList<Event> {
         val result = ArrayList<Event>()
         for(i in 0 until events.size){
-            val length = Utils.instance.getLongestCommonSubsequenceLength(query, events[i].name)
+            val length = Utils.instance.getLongestCommonSubsequenceLength(query.toLowerCase(), events[i].name.toLowerCase())
             if (length.toDouble()/events[i].name.length >= matchRate)
                 result.add(events[i])
         }

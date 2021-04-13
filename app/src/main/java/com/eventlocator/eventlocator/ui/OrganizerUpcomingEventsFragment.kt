@@ -36,7 +36,10 @@ class OrganizerUpcomingEventsFragment(val events: ArrayList<Event>): Fragment() 
             val startDateTime = startDate.atTime(LocalTime.parse(events[i].sessions[0].startTime,
                     DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
             if (LocalDateTime.now().isBefore(registrationCloseDateTime)){
-                status.add(getString(R.string.registration_ongoing))
+                if (events[i].currentNumberOfParticipants == events[i].maxParticipants){
+                    status.add(getString(R.string.event_full))
+                }
+                else status.add(getString(R.string.registration_ongoing))
             }
             else if (LocalDateTime.now().isBefore(startDateTime) && LocalDateTime.now().isAfter(registrationCloseDateTime)){
                 status.add(getString(R.string.registration_closed))
@@ -61,7 +64,6 @@ class OrganizerUpcomingEventsFragment(val events: ArrayList<Event>): Fragment() 
                 if (!found){
                     status.add(getString(R.string.active))
                 }
-                    //TODO: Add full
             }
 
         }

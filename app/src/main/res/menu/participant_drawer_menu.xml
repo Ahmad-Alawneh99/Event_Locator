@@ -11,6 +11,11 @@
         android:icon="@drawable/ic_baseline_placeholder_24"/>
 
     <item
+        android:id="@+id/dmiSearchOrganizers"
+        android:title="@string/search_organizers"
+        android:icon="@drawable/ic_baseline_placeholder_24"/>
+
+    <item
         android:id="@+id/dmiEditProfile"
         android:title="@string/edit_profile"
         android:icon="@drawable/ic_baseline_settings_24"/>

@@ -29,4 +29,7 @@ interface ParticipantService {
     @GET("/participants/organizers/followed")
     fun getFollowedOrganizers(): Call<ArrayList<Organizer>>
 
+    @GET("/participant/information")
+    fun getParticipantInfo(): Call<Participant>
+
 }
