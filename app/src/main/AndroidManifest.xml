@@ -13,12 +13,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocator"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.SearchOrganizersActivity"></activity>
-        <activity android:name=".ui.FollowedOrganizersActivity" />
-        <activity android:name=".ui.GiveFeedbackForAnEventActivity" />
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyDplPLPkGMXu35fWIZlG4n_x7xzarQjhMk" />
+        <activity android:name=".ui.ViewImageActivity"
+            android:theme="@style/Theme.EventLocator.NoActionBar"></activity>
         <activity
-            android:name=".ui.ViewEventActivity"
-            android:launchMode="singleTask" />
+            android:name=".ui.ViewLocationActivity"
+            android:parentActivityName=".ui.ViewEventActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.ViewEventActivity" />
+        </activity>
+        <activity android:name=".ui.QRCodesActivity"></activity>
+        <activity android:name=".ui.SearchOrganizersActivity" />
+        <activity android:name=".ui.FollowedOrganizersActivity" />
+        <activity android:name=".ui.RateEventActivity" />
+        <activity android:name=".ui.OrganizerEventsActivity"
+            android:launchMode="singleTask"/>
+        <activity
+            android:name=".ui.ViewEventActivity" />
         <activity
             android:name=".ui.OrganizerProfileActivity"
             android:launchMode="singleTask" />

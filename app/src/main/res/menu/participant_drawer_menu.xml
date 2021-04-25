@@ -3,17 +3,17 @@
     <item
         android:id="@+id/dmiMyEvents"
         android:title="@string/my_events"
-        android:icon="@drawable/ic_baseline_placeholder_24"/>
+        android:icon="@drawable/ic_calendar_alt"/>
 
     <item
         android:id="@+id/dmiFollowedOrganizers"
         android:title="@string/followed_organizers"
-        android:icon="@drawable/ic_baseline_placeholder_24"/>
+        android:icon="@drawable/ic_group"/>
 
     <item
         android:id="@+id/dmiSearchOrganizers"
         android:title="@string/search_organizers"
-        android:icon="@drawable/ic_baseline_placeholder_24"/>
+        android:icon="@drawable/ic_search"/>
 
     <item
         android:id="@+id/dmiEditProfile"
@@ -23,7 +23,6 @@
     <item
         android:id="@+id/dmiLogout"
         android:title="@string/logout"
-        android:icon="@drawable/ic_baseline_placeholder_24"/>
+        android:icon="@drawable/ic_logout"/>
 
-    <!-- TODO: get better icons -->
 </menu>

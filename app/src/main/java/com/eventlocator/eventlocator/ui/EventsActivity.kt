@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.ContextCompat
@@ -78,16 +79,19 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         startActivity(a)
     }
 
-    override fun onResume() {
-        super.onResume()
-        //TODO: add a button to achieve this instead of having it automatically change
-        //pagerAdapter.requestEventsUpdate()
-    }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
-        menu!!.add(1,1,1,"Filter").also { item ->
-            item?.icon = ContextCompat.getDrawable(this, R.drawable.ic_temp)
-            item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+        if (binding.pbLoading.visibility == View.INVISIBLE) {
+            menu!!.add(1, 1, 2, "Filter").also { item ->
+                item?.icon = ContextCompat.getDrawable(this, R.drawable.ic_filter)
+                item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            }
+        }
+        if (this::pagerAdapter.isInitialized){
+            menu!!.add(1, 2, 1, "Refresh").also { item ->
+                item?.icon = ContextCompat.getDrawable(this, R.drawable.ic_refresh)
+                item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
+            }
         }
         return super.onCreateOptionsMenu(menu)
     }
@@ -117,6 +121,12 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
                 }
                 return true
             }
+            2 -> {
+                binding.pbLoading.visibility = View.VISIBLE
+                invalidateOptionsMenu()
+                pagerAdapter.requestEventsUpdate()
+                return true
+            }
             else -> return false
         }
     }
@@ -127,25 +137,30 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java,token!!)
                 .getParticipantInfo().enqueue(object : Callback<Participant> {
                     override fun onResponse(call: Call<Participant>, response: Response<Participant>) {
-                        Toast.makeText(this@EventsActivity, response.code().toString(), Toast.LENGTH_SHORT).show()
                         if (response.code() == 202) {
                             participant = response.body()!!
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                                .edit().putLong(SharedPreferenceManager.instance.PARTICIPANT_ID_KEY, participant.id).apply()
                             loadEvents()
                         } else if (response.code() == 401) {
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
                                     "401: Unauthorized access", true)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         } else if (response.code() == 404) {
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
                                     "404: Information not found", true)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         } else if (response.code() == 500) {
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
                                     "Server issue, please try again later", false)
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
                     }
 
                     override fun onFailure(call: Call<Participant>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
-                                "Can't connect to the server", false)
+                                "Can't connect to the server", true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
@@ -157,6 +172,9 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         }
         binding.nvParticipant.getHeaderView(0).findViewById<TextView>(R.id.tvParticipantName).text =
                 participant.firstName + " " + participant.lastName
+        binding.nvParticipant.getHeaderView(0).findViewById<TextView>(R.id.tvParticipantEmail).text = participant.email
+        binding.nvParticipant.getHeaderView(0).findViewById<TextView>(R.id.tvParticipantRating).text =
+                participant.rating.toString() + "/5"
         pagerAdapter = UpcomingEventsPagerAdapter(this, 2)
         binding.pagerEvents.adapter = pagerAdapter
 
@@ -185,33 +203,36 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         binding.nvParticipant.setNavigationItemSelectedListener { item: MenuItem ->
             when(item.itemId){
                 R.id.dmiMyEvents -> {
-                    startActivity(Intent(this, ParticipantEventsActivity::class.java))
-                    binding.root.closeDrawers()
+                    val intent = Intent(this, ParticipantEventsActivity::class.java)
+                    intent.putExtra("participant", participant)
+                    startActivity(intent)
+                    binding.dlParticipant.closeDrawers()
                     true
                 }
                 R.id.dmiFollowedOrganizers -> {
                     startActivity(Intent(this, FollowedOrganizersActivity::class.java))
-                    binding.root.closeDrawers()
+                    binding.dlParticipant.closeDrawers()
                     true
                 }
                 R.id.dmiSearchOrganizers -> {
                     startActivity(Intent(this, SearchOrganizersActivity::class.java))
-                    binding.root.closeDrawers()
+                    binding.dlParticipant.closeDrawers()
                     true
                 }
                 R.id.dmiEditProfile -> {
-                    //TODO: open get profile
-                    binding.root.closeDrawers()
+                    //TODO: open edit profile
+                    binding.dlParticipant.closeDrawers()
                     true
                 }
                 R.id.dmiLogout -> {
                     val sharedPreferenceEditor =
                             getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
                     sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, null)
+                    sharedPreferenceEditor.putLong(SharedPreferenceManager.instance.PARTICIPANT_ID_KEY, -1)
                     sharedPreferenceEditor.apply()
                     //TODO: add confirmation box for logout
                     startActivity(Intent(this, LoginActivity::class.java))
-                    binding.root.closeDrawers()
+                    binding.dlParticipant.closeDrawers()
                     true
                 }
                 else -> {

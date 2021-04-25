@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.UpcomingEventOrganizersProfileBinding
 import com.eventlocator.eventlocator.ui.ViewEventActivity
@@ -12,7 +14,7 @@ import com.eventlocator.eventlocator.utilities.DateTimeFormat
 import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
 import java.time.LocalDate
 
-class OrganizerUpcomingEventAdapter(private val events: ArrayList<Event>, private val status: ArrayList<String>):
+class OrganizerUpcomingEventAdapter(private val events: ArrayList<Event>):
         RecyclerView.Adapter<OrganizerUpcomingEventAdapter.OrganizerUpcomingEventHolder>() {
     lateinit var context: Context
     inner class OrganizerUpcomingEventHolder(var binding: UpcomingEventOrganizersProfileBinding):
@@ -45,8 +47,17 @@ class OrganizerUpcomingEventAdapter(private val events: ArrayList<Event>, privat
         holder.binding.tvEventDates.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
-
-        holder.binding.tvEventStatus.text = status[position]
+        val status = events[position].getStatus()
+        holder.binding.tvEventStatus.text = status
+        if (status == "Full" || status == "Registration closed"){
+            holder.binding.tvEventStatus.setTextColor(ContextCompat.getColor(context, R.color.design_default_color_error))
+        }
+        else if (status == "Pending (waiting for response from admins)"){
+            holder.binding.tvEventStatus.setTextColor(ContextCompat.getColor(context, R.color.warning))
+        }
+        else{
+            holder.binding.tvEventStatus.setTextColor(ContextCompat.getColor(context, R.color.green))
+        }
     }
 
     override fun getItemCount(): Int = events.size

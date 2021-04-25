@@ -6,23 +6,30 @@ import android.location.Geocoder
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
-import android.view.View
+import android.view.*
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.data.Session
 import com.eventlocator.eventlocator.databinding.ActivityViewEventBinding
+import com.eventlocator.eventlocator.databinding.SessionDisplayBinding
 import com.eventlocator.eventlocator.retrofit.EventService
 import com.eventlocator.eventlocator.retrofit.RetrofitServiceFactory
 import com.eventlocator.eventlocator.utilities.*
+import com.google.android.gms.maps.model.LatLng
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayInputStream
+import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
+import java.time.format.TextStyle
+import java.util.*
 
 class ViewEventActivity : AppCompatActivity() {
     lateinit var binding: ActivityViewEventBinding
@@ -40,6 +47,14 @@ class ViewEventActivity : AppCompatActivity() {
                 ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
         eventID = intent.getLongExtra("eventID", -1)
         getAndLoadEvent()
+        binding.svMain.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
+            if (scrollY > oldScrollY){
+                binding.btnAction.shrink()
+            }
+            else{
+                binding.btnAction.extend()
+            }
+        }
 
     }
 
@@ -48,7 +63,10 @@ class ViewEventActivity : AppCompatActivity() {
         getAndLoadEvent()
     }
 
+
     private fun getAndLoadEvent(){
+        binding.pbLoading.visibility = View.VISIBLE
+        binding.btnAction.visibility = View.INVISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
@@ -57,6 +75,7 @@ class ViewEventActivity : AppCompatActivity() {
                         if (response.code()==202) {
                             event = response.body()!!
                             updateRegisterButton()
+                            invalidateOptionsMenu()
                             loadEvent()
                         }
                         else if (response.code()==401){
@@ -71,20 +90,27 @@ class ViewEventActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                     "Error", "Server issue, please try again later", true)
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<Event>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                 "Error", "Can't connect to server", true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
     }
 
     fun loadEvent(){
-        //TODO: add sessions
-        binding.ivEventImage.setImageBitmap(BitmapFactory.
-        decodeStream(ByteArrayInputStream(Base64.decode(event.image, Base64.DEFAULT))))
+        val imageBitmap = BitmapFactory.
+        decodeStream(ByteArrayInputStream(Base64.decode(event.image, Base64.DEFAULT)))
+        binding.ivEventImage.setImageBitmap(imageBitmap)
+        binding.ivEventImage.setOnClickListener {
+            val intent = Intent(this, ViewImageActivity::class.java)
+            intent.putExtra("image", event.image)
+            startActivity(intent)
+        }
         val startDateFormatted = LocalDate.parse(event.startDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
         val endDateFormatted = LocalDate.parse(event.endDate, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
 
@@ -96,25 +122,44 @@ class ViewEventActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+        val layoutManager = object: LinearLayoutManager(this) {
+            override fun canScrollVertically():Boolean =  false
+        }
+        binding.rvSessions.layoutManager = layoutManager
+        val adapter = SessionDisplayAdapter(event.sessions)
+        binding.rvSessions.adapter = adapter
+
         binding.tvEventName.text = event.name
         binding.tvEventDate.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(startDateFormatted) + " - " + DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(endDateFormatted)
-        binding.tvEventRating.text = if(event.isFinished())event.rating.toString()
-        else "This event didn't finish yet"
+        binding.tvRating.text = if(event.isFinished()) {
+            if (event.rating == 0.0) "No ratings yet"
+            else BigDecimal(event.rating).setScale(2).toString() + "/5"
+        }
+        else ""
+        if (!event.isFinished()){
+            binding.llRating.visibility = View.GONE
+        }
+
         binding.tvEventStatus.text = event.getStatus()
         binding.tvDescription.text = event.description
 
-        //TODO: surround optional data with card views and hide them when there is no data
 
         if (event.locatedEventData!=null) {
+            binding.llCity.visibility = View.VISIBLE
+            binding.llLocation.visibility = View.VISIBLE
             binding.tvCity.text = cities[event.locatedEventData!!.city]
-            val location = Geocoder(this).getFromLocation(
-                    event.locatedEventData!!.location[0],
-                    event.locatedEventData!!.location[1], 1)
-
-            binding.tvLocation.text = if (location.size == 0) "Unnamed location" else location[0].getAddressLine(0)
-            //TODO: Set click listener to show location on map
+            binding.tvLocation.setOnClickListener {
+                val intent = Intent(this, ViewLocationActivity::class.java)
+                val latLng = LatLng(event.locatedEventData!!.location[0], event.locatedEventData!!.location[1])
+                intent.putExtra("latLng", latLng)
+                startActivity(intent)
+            }
+        }
+        else{
+            binding.llCity.visibility = View.GONE
+            binding.llLocation.visibility = View.GONE
         }
 
 
@@ -123,7 +168,6 @@ class ViewEventActivity : AppCompatActivity() {
         binding.tvRegistrationCloseDateTime.text = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DISPLAY)
                 .format(registrationCloseDateTime)
 
-        //TODO: find a better way to do this
         var categories = ""
         for(i in 0 until event.categories.size){
             categories+= when(event.categories[i]){
@@ -138,7 +182,10 @@ class ViewEventActivity : AppCompatActivity() {
 
         binding.tvCategories.text = categories
 
-        if (event.isCanceled()) {
+        if (event.canceledEventData!=null) {
+            binding.llCancellationDate.visibility = View.VISIBLE
+            binding.llCancellationReason.visibility = View.VISIBLE
+
             val cancellationDateTime = LocalDateTime.parse(event.canceledEventData!!.cancellationDateTime,
                     DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_TIME_DEFAULT))
 
@@ -146,7 +193,53 @@ class ViewEventActivity : AppCompatActivity() {
                     .format(cancellationDateTime)
             binding.tvCancellationReason.text = event.canceledEventData!!.cancellationReason
         }
+        else{
+            binding.llCancellationDate.visibility = View.GONE
+            binding.llCancellationReason.visibility = View.GONE
+        }
 
+
+
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        if (!this::event.isInitialized)return false
+        if (!event.isCanceled()) {
+            if (event.isFinished() && event.hasParticipantAttended == ParticipantAttendanceStatus.TRUE.ordinal) {
+                //TODO: Check if 48 hours passed and if participant already rated
+                menu?.add(1, 1, 1, "Rate event")
+            }
+            if (event.isParticipantRegistered && !event.isFinished() && event.isLimitedLocated()) {
+                menu?.add(1, 2, 2, "View QR codes")
+            }
+        }
+        return super.onCreateOptionsMenu(menu)
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+
+        when(item.itemId){
+            1 -> {
+
+            }
+
+            2 -> {
+                val intent = Intent(this, QRCodesActivity::class.java)
+                intent.putExtra("eventID", eventID)
+                intent.putExtra("participantID", getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                    .getLong(SharedPreferenceManager.instance.PARTICIPANT_ID_KEY,-1))
+                intent.putExtra("sessions", event.sessions)
+                startActivity(intent)
+            }
+
+            3 -> {
+
+            }
+        }
+
+
+
+        return super.onOptionsItemSelected(item)
     }
 
     private fun register(){
@@ -159,6 +252,7 @@ class ViewEventActivity : AppCompatActivity() {
                         if (response.code()==202){
                             event.isParticipantRegistered = true
                             updateRegisterButton()
+                            invalidateOptionsMenu()
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity, "Error",
@@ -166,7 +260,9 @@ class ViewEventActivity : AppCompatActivity() {
                         }
                         else if (response.code() == 409){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
-                                    "Error", "You are already registered in the event", true)
+                                    "Error", "Event is full", false)
+                            event.currentNumberOfParticipants = event.maxParticipants
+                            updateRegisterButton()
                         }
                         else if (response.code() == 406){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
@@ -180,7 +276,7 @@ class ViewEventActivity : AppCompatActivity() {
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
-                                "Error", "Can't connect to server", true)
+                                "Error", t.message!!.toString(), true)
                     }
 
                 })
@@ -203,7 +299,7 @@ class ViewEventActivity : AppCompatActivity() {
                         }
                         else if (response.code() == 409){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
-                                    "Error", "You are already unregistered in the event", true)
+                                    "Error", "You are already unregistered in the event", false)
                         }
                         else if (response.code() == 406){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
@@ -217,7 +313,7 @@ class ViewEventActivity : AppCompatActivity() {
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
-                                "Error", "Can't connect to server", true)
+                                "Error", t.message!!.toString(), true)
                     }
 
                 })
@@ -241,6 +337,7 @@ class ViewEventActivity : AppCompatActivity() {
         if (!event.isRegistrationClosed() && !event.isParticipantRegistered) {
             binding.btnAction.text = getString(R.string.register)
             binding.btnAction.setOnClickListener { register() }
+            binding.btnAction.visibility = View.VISIBLE
         } else if (event.isParticipantRegistered) {
             val eventStartDate = LocalDate.parse(event.startDate,
                     DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
@@ -249,11 +346,49 @@ class ViewEventActivity : AppCompatActivity() {
             if (eventStartDateTime.minusHours(12).isAfter(LocalDateTime.now())) {
                 binding.btnAction.text = getString(R.string.unregister)
                 binding.btnAction.setOnClickListener { unregister() }
+                binding.btnAction.visibility = View.VISIBLE
             }
             else{
-                binding.btnAction.visibility = View.GONE
+                binding.btnAction.visibility = View.INVISIBLE
             }
         }
     }
+
+}
+
+class SessionDisplayAdapter(private val sessions: ArrayList<Session>):
+        RecyclerView.Adapter<SessionDisplayAdapter.SessionDisplayViewHolder>(){
+
+    inner class SessionDisplayViewHolder(var binding: SessionDisplayBinding):
+            RecyclerView.ViewHolder(binding.root)
+
+    override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): SessionDisplayViewHolder {
+        val binding = SessionDisplayBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        return SessionDisplayViewHolder(binding)
+    }
+
+
+    override fun onBindViewHolder(holder: SessionDisplayViewHolder, position: Int) {
+        val date = LocalDate.parse(sessions[position].date, DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
+        val timeFormatterDefault = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)
+        val timeFormatterDisplay = DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DISPLAY)
+        val startTime = LocalTime.parse(sessions[position].startTime, timeFormatterDefault)
+        val endTime = LocalTime.parse(sessions[position].endTime, timeFormatterDefault)
+        holder.binding.tvSessionDateAndDay.text = date.dayOfWeek.getDisplayName(TextStyle.FULL, Locale.getDefault()) +", "+
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(date)
+
+        holder.binding.tvStartTime.text = timeFormatterDisplay.format(startTime)
+        holder.binding.tvEndTime.text = timeFormatterDisplay.format(endTime)
+
+        if (sessions[position].checkInTime!=""){
+            val checkInTime = timeFormatterDefault.parse(sessions[position].checkInTime)
+            holder.binding.tvCheckInTime.text = timeFormatterDisplay.format(checkInTime)
+        }
+        else{
+            holder.binding.llCheckInTime.visibility = View.GONE
+        }
+    }
+
+    override fun getItemCount(): Int = sessions.size
 
 }

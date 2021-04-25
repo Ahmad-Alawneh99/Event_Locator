@@ -9,13 +9,33 @@
     android:paddingRight="16dp"
     android:paddingTop="16dp"
     android:theme="@style/Theme.EventLocator"
-    android:background="@color/purple_500">
+    android:background="@color/primaryColor">
 
     <TextView
         android:id="@+id/tvParticipantName"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/larger_label"
-        android:text = "Abdulrahman Khalil"/>
+        android:textSize="@dimen/larger_label" />
+    <TextView
+        android:id="@+id/tvParticipantEmail"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="@dimen/larger_label" />
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label"
+            android:text="Rating: "
+            android:layout_marginEnd="4dp"/>
+        <TextView
+            android:id="@+id/tvParticipantRating"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="@dimen/larger_label" />
+    </LinearLayout>
 
 </LinearLayout>

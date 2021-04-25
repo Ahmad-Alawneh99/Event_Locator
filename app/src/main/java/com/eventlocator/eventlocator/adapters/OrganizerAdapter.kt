@@ -8,6 +8,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.eventlocator.eventlocator.data.Organizer
 import com.eventlocator.eventlocator.databinding.OrganizerBinding
 import com.eventlocator.eventlocator.ui.OrganizerProfileActivity
+import java.math.BigDecimal
 
 class OrganizerAdapter(private val organizers: ArrayList<Organizer>): RecyclerView.Adapter<OrganizerAdapter.OrganizerViewHolder>() {
 
@@ -34,6 +35,7 @@ class OrganizerAdapter(private val organizers: ArrayList<Organizer>): RecyclerVi
         holder.binding.tvOrganizerID.text = organizers[position].id.toString()
         holder.binding.tvOrganizerName.text = organizers[position].name
         holder.binding.tvFollowers.text = organizers[position].numberOfFollowers.toString()
+        holder.binding.tvRating.text = BigDecimal(organizers[position].rating).setScale(2).toString() + "/5"
     }
 
     override fun getItemCount(): Int = organizers.size

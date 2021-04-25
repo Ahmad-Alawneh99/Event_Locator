@@ -26,6 +26,8 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
         binding.btnLogin.isEnabled = false
         binding.btnLogin.setOnClickListener {
+            binding.btnLogin.isEnabled = false
+            binding.pbLoading.visibility = View.VISIBLE
             val credentials = ArrayList<String>()
             credentials.add(binding.etEmail.text.toString())
             credentials.add(binding.etPassword.text.toString())
@@ -50,12 +52,16 @@ class LoginActivity : AppCompatActivity() {
                                         "Server issue, please try again later", false)
                                 binding.tvError.visibility = View.INVISIBLE
                             }
+                            binding.btnLogin.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                         override fun onFailure(call: Call<String>, t: Throwable) {
                             Utils.instance.displayInformationalDialog(this@LoginActivity,
                                     "Error", "Can't connect to the server", false)
                             binding.tvError.visibility = View.INVISIBLE
+                            binding.btnLogin.isEnabled = true
+                            binding.pbLoading.visibility = View.INVISIBLE
                         }
 
                     })

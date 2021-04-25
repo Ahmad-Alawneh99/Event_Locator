@@ -110,4 +110,5 @@
     <string name="show_full_events">Show full events</string>
     <string name="search">Search</string>
     <string name="login_error">Wrong email/password combination</string>
+    <string name="click_to_view_location">Click to view location</string>
 </resources>

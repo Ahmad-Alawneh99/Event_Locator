@@ -1,8 +1,10 @@
 package com.eventlocator.eventlocator.retrofit
 
 import com.eventlocator.eventlocator.data.Event
+import com.eventlocator.eventlocator.data.Feedback
 import okhttp3.ResponseBody
 import retrofit2.Call
+import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -26,5 +28,8 @@ interface EventService {
 
     @POST("/participants/event/{id}/unregister")
     fun unregisterParticipantInEvent(@Path("id") eventID: Long): Call<ResponseBody>
+
+    @POST("/{id}") //TODO: Specify actual router
+    fun addParticipantRating(@Path("id") eventID: Long ,@Body feedback: Feedback): Call<ResponseBody>
 
 }

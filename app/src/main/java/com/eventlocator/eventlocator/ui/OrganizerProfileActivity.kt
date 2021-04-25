@@ -22,6 +22,7 @@ import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayInputStream
+import java.math.BigDecimal
 import java.net.URLEncoder
 
 class OrganizerProfileActivity : AppCompatActivity() {
@@ -34,7 +35,6 @@ class OrganizerProfileActivity : AppCompatActivity() {
         binding = ActivityOrganizerProfileBinding.inflate(layoutInflater)
         setContentView(binding.root)
         organizerID = intent.getLongExtra("organizerID",-1)
-        //getAndLoadOrganizer()
 
     }
 
@@ -45,6 +45,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
 
 
     private fun getAndLoadOrganizer(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
 
@@ -57,7 +58,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
                             binding.tvAbout.text = organizer.about
                             binding.tvFollowers.text = organizer.numberOfFollowers.toString()
                             binding.tvEmail.text = organizer.email
-                            binding.tvRating.text = organizer.rating.toString()
+                            binding.tvRating.text = BigDecimal(organizer.rating).setScale(2).toString() + "/5"
                             setSocialMediaAccounts()
                             if (organizer.image != "") {
                                 binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
@@ -69,6 +70,11 @@ class OrganizerProfileActivity : AppCompatActivity() {
                             } else {
                                 binding.btnFollowOrUnfollow.text = getString(R.string.follow)
                                 binding.btnFollowOrUnfollow.setOnClickListener { followOrganizer() }
+                            }
+                            binding.btnViewEvents.setOnClickListener {
+                                val intent =Intent(this@OrganizerProfileActivity, OrganizerEventsActivity::class.java)
+                                intent.putExtra("organizerID", organizer.id)
+                                startActivity(intent)
                             }
                         }
                         else if (response.code()==401){
@@ -83,11 +89,13 @@ class OrganizerProfileActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
                                     "Error", "Server issue, please try again later",true)
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<Organizer>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
                                 "Error", "Can't connect to server",true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
@@ -199,21 +207,21 @@ class OrganizerProfileActivity : AppCompatActivity() {
                         }
                         else if (response.code() == 409){
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                    "Error", "You already follow this organizer", true)
+                                    "Error", "You already follow this organizer", false)
                         }
                         else if (response.code() == 406){
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                    "Error", "organizer/participant not found", true)
+                                    "Error", "organizer/participant not found", false)
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                    "Error", "Server issue, please try again later", true)
+                                    "Error", "Server issue, please try again later", false)
                         }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                "Error", "Can't connect to server", true)
+                                "Error", "Can't connect to server", false)
                     }
 
                 })
@@ -240,21 +248,21 @@ class OrganizerProfileActivity : AppCompatActivity() {
                         }
                         else if (response.code() == 409){
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                    "Error", "You already unfollowed this organizer", true)
+                                    "Error", "You already unfollowed this organizer", false)
                         }
                         else if (response.code() == 406){
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                    "Error", "organizer/participant not found", true)
+                                    "Error", "organizer/participant not found", false)
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                    "Error", "Server issue, please try again later", true)
+                                    "Error", "Server issue, please try again later", false)
                         }
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
-                                "Error", "Can't connect to server", true)
+                                "Error", "Can't connect to server", false)
                     }
 
                 })

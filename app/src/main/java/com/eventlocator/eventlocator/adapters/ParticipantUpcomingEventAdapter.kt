@@ -4,7 +4,9 @@ import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
+import com.eventlocator.eventlocator.R
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.UpcomingEventParticipantsProfileBinding
 import com.eventlocator.eventlocator.ui.ViewEventActivity
@@ -12,7 +14,7 @@ import com.eventlocator.eventlocator.utilities.DateTimeFormat
 import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
 import java.time.LocalDate
 
-class ParticipantUpcomingEventAdapter(private val events: ArrayList<Event>, private val status: ArrayList<String>):
+class ParticipantUpcomingEventAdapter(private val events: ArrayList<Event>):
         RecyclerView.Adapter<ParticipantUpcomingEventAdapter.ParticipantUpcomingEventViewHolder>(){
 
     lateinit var context: Context
@@ -47,7 +49,17 @@ class ParticipantUpcomingEventAdapter(private val events: ArrayList<Event>, priv
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
 
-        holder.binding.tvEventStatus.text = status[position]
+        val status = events[position].getStatus()
+        holder.binding.tvEventStatus.text = status
+        if (status == "Full" || status == "Registration closed"){
+            holder.binding.tvEventStatus.setTextColor(ContextCompat.getColor(context, R.color.design_default_color_error))
+        }
+        else if (status == "Pending (waiting for response from admins)"){
+            holder.binding.tvEventStatus.setTextColor(ContextCompat.getColor(context, R.color.warning))
+        }
+        else{
+            holder.binding.tvEventStatus.setTextColor(ContextCompat.getColor(context, R.color.green))
+        }
     }
 
     override fun getItemCount(): Int = events.size

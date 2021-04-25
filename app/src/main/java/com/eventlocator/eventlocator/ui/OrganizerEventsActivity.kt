@@ -3,9 +3,11 @@ package com.eventlocator.eventlocator.ui
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.drawerlayout.widget.DrawerLayout
 import androidx.fragment.app.commit
 import androidx.viewpager2.widget.ViewPager2
 import com.eventlocator.eventlocator.R
@@ -33,11 +35,14 @@ class OrganizerEventsActivity : AppCompatActivity(), OnPreviousEventsFiltered {
         super.onCreate(savedInstanceState)
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        binding.mtbToolbar.visibility = View.GONE
+        binding.dlParticipant.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED)
         organizerID = intent.getLongExtra("organizerID", -1)
         getAndLoadEvents()
     }
 
     private fun getAndLoadEvents(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(OrganizerService::class.java, token!!)
@@ -45,7 +50,7 @@ class OrganizerEventsActivity : AppCompatActivity(), OnPreviousEventsFiltered {
                     override fun onResponse(call: Call<ArrayList<Event>>, response: Response<ArrayList<Event>>) {
                         if (response.code() == 202) {
                             invalidateOptionsMenu()
-                            OrganizerEventsPagerAdapter(this@OrganizerEventsActivity, 3, response.body()!!)
+                            pagerAdapter = OrganizerEventsPagerAdapter(this@OrganizerEventsActivity, 3, response.body()!!)
                             binding.pagerEvents.adapter = pagerAdapter
                             TabLayoutMediator(binding.tlEvents, binding.pagerEvents) { tab, position ->
                                 when (position) {
@@ -83,11 +88,13 @@ class OrganizerEventsActivity : AppCompatActivity(), OnPreviousEventsFiltered {
                             Utils.instance.displayInformationalDialog(this@OrganizerEventsActivity,
                                     "Error", "Server issue, please try again later", false)
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ArrayList<Event>>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@OrganizerEventsActivity,
                                 "Error", "Can't connect to server", false)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
@@ -101,7 +108,7 @@ class OrganizerEventsActivity : AppCompatActivity(), OnPreviousEventsFiltered {
      override fun onPrepareOptionsMenu(menu: Menu?): Boolean {
          if (!this::pagerAdapter.isInitialized || currentPosition!=1)return false
          menu?.add(1, 1, Menu.NONE, "Filter").also { item ->
-             item?.icon = ContextCompat.getDrawable(this, R.drawable.ic_temp)
+             item?.icon = ContextCompat.getDrawable(this, R.drawable.ic_filter)
              item?.setShowAsAction(MenuItem.SHOW_AS_ACTION_ALWAYS)
          }
          return super.onPrepareOptionsMenu(menu)

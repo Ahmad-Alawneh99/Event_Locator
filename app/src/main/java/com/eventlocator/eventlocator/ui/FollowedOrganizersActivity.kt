@@ -2,6 +2,7 @@ package com.eventlocator.eventlocator.ui
 
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.view.View
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocator.adapters.OrganizerAdapter
@@ -22,8 +23,7 @@ class FollowedOrganizersActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityFollowedOrganizersBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        val layoutManager = LinearLayoutManager(this)
-        binding.rvFollowedOrganizers.layoutManager = layoutManager
+
     }
 
     override fun onResume(){
@@ -32,35 +32,39 @@ class FollowedOrganizersActivity : AppCompatActivity() {
     }
 
     private fun getAndLoadFollowedOrganizers(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java, token!!)
                 .getFollowedOrganizers().enqueue(object: Callback<ArrayList<Organizer>> {
                     override fun onResponse(call: Call<ArrayList<Organizer>>, response: Response<ArrayList<Organizer>>) {
-                        Toast.makeText(this@FollowedOrganizersActivity, response.code().toString(),Toast.LENGTH_LONG).show()
                         if(response.code()==202){
                             val adapter = OrganizerAdapter(response.body()!!)
+                            val layoutManager = LinearLayoutManager(this@FollowedOrganizersActivity,
+                                    LinearLayoutManager.VERTICAL, false)
+                            binding.rvFollowedOrganizers.layoutManager = layoutManager
                             binding.rvFollowedOrganizers.adapter = adapter
                             binding.rvFollowedOrganizers.adapter!!.notifyDataSetChanged()
                         }
                         else if (response.code()==401){
-                            Utils.instance.displayInformationalDialog(this@FollowedOrganizersActivity, "Error",
-                                    "401: Unauthorized access",true)
+                            Utils.instance.displayInformationalDialog(this@FollowedOrganizersActivity,
+                                    "Error", "401: Unauthorized access",true)
                         }
                         else if (response.code() == 404){
                             Utils.instance.displayInformationalDialog(this@FollowedOrganizersActivity,
-                                    "Error", "No organizers found",false)
+                                    "Error", "No organizers found",true)
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@FollowedOrganizersActivity,
-                                    "Error", "Server issue, please try again later",false)
+                                    "Error", "Server issue, please try again later",true)
                         }
-
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ArrayList<Organizer>>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@FollowedOrganizersActivity,
-                                "Error", "Can't connect to server",false)
+                                "Error", "Can't connect to server",true)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
