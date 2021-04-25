@@ -11,6 +11,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginEnd="@dimen/et_start_end_margin"
+        android:layout_marginTop="16dp"
         android:layout_marginStart="@dimen/et_start_end_margin"/>
 
 </LinearLayout>

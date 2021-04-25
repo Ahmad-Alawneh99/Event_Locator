@@ -8,6 +8,7 @@ import com.eventlocator.eventlocator.adapters.QRCodeAdapter
 import com.eventlocator.eventlocator.data.Session
 import com.eventlocator.eventlocator.databinding.ActivityQRCodesBinding
 import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
 import com.journeyapps.barcodescanner.BarcodeEncoder
 
@@ -26,9 +27,10 @@ class QRCodesActivity : AppCompatActivity() {
         val qrCodes = ArrayList<Bitmap>()
 
         for(i in 0 until sessions.size){
+            val hintMap = mapOf(EncodeHintType.MARGIN to 2)
             val multiFormatWriter = MultiFormatWriter()
             val data = participantID.toString()+ ","+eventID.toString()+","+sessions[i].id
-            val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 400, 400)
+            val bitMatrix = multiFormatWriter.encode(data, BarcodeFormat.QR_CODE, 400, 400, hintMap)
             val barcodeEncoder = BarcodeEncoder()
             qrCodes.add(barcodeEncoder.createBitmap(bitMatrix))
         }

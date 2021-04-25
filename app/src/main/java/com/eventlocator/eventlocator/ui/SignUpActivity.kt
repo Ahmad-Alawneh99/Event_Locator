@@ -5,6 +5,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.view.View
 import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
@@ -34,8 +35,9 @@ class SignUpActivity : AppCompatActivity() {
             ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
 
         binding.btnSignUp.isEnabled = false
+        binding.tlCityMenu.error = "City is required"
         binding.btnSignUp.setOnClickListener {
-
+            binding.pbLoading.visibility = View.VISIBLE
 
             //TODO: make the categories and city required
             val categories = ArrayList<Int>()
@@ -69,11 +71,13 @@ class SignUpActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
                                     "Server issue, please try again later",false)
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
                                 "Can't connect to the server",false)
+                        binding.pbLoading.visibility = View.INVISIBLE
 
                     }
 
@@ -281,8 +285,40 @@ class SignUpActivity : AppCompatActivity() {
             }
         }
 
+        binding.cbEducational.setOnCheckedChangeListener { buttonView, isChecked ->
+            updateEventCategoryStatus()
+        }
+        binding.cbEntertainment.setOnCheckedChangeListener { buttonView, isChecked ->
+            updateEventCategoryStatus()
+        }
+        binding.cbVolunteering.setOnCheckedChangeListener { buttonView, isChecked ->
+            updateEventCategoryStatus()
+        }
+        binding.cbSports.setOnCheckedChangeListener { buttonView, isChecked ->
+            updateEventCategoryStatus()
+        }
+
         val adapter = ArrayAdapter(this, R.layout.city_list_item, cities)
         binding.acCityMenu.setAdapter(adapter)
+
+        binding.acCityMenu.addTextChangedListener(object: TextWatcher{
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+            }
+
+            override fun afterTextChanged(s: Editable?) {
+                if (!cities.contains(binding.acCityMenu.text.toString())){
+                    binding.tlCityMenu.error = "City is required"
+                }
+                else{
+                    binding.tlCityMenu.error = null
+                }
+                updateSignUpButton()
+            }
+
+        })
     }
 
     fun updateSignUpButton(){
@@ -291,8 +327,14 @@ class SignUpActivity : AppCompatActivity() {
                 && binding.etLastName.text.toString().trim()!= "" && binding.tlLastName.error == null
                 && binding.etPassword.text.toString().trim() != ""
                 && binding.etPassword.text.toString().trim() == binding.etConfirmPassword.text.toString().trim()
-                && binding.tlPassword.error == null)
+                && binding.tlPassword.error == null && binding.tvEventCategoryError.visibility == View.INVISIBLE
+                && cities.contains(binding.acCityMenu.text.toString()))
 
+    }
+    private fun updateEventCategoryStatus(){
+        binding.tvEventCategoryError.visibility = if (!(binding.cbEducational.isChecked || binding.cbEntertainment.isChecked ||
+                        binding.cbVolunteering.isChecked || binding.cbSports.isChecked)) View.VISIBLE else View.INVISIBLE
+        updateSignUpButton()
     }
 
     override fun onBackPressed() {

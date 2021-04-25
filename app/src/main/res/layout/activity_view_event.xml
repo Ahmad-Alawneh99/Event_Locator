@@ -109,7 +109,9 @@
                     android:id="@+id/tvParticipantStatus"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/large_label"/>
+                    android:textSize="@dimen/large_label"
+                    android:layout_marginStart="@dimen/et_start_end_margin"
+                    android:layout_marginEnd="@dimen/et_start_end_margin"/>
             </LinearLayout>
         </androidx.cardview.widget.CardView>
 
@@ -127,7 +129,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/large_label"
+                    android:textSize="@dimen/larger_label"
                     android:text="@string/organized_by"/>
                 <TextView
                     android:id="@+id/tvOrganizerName"
@@ -139,18 +141,19 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/large_label"
+                    android:textSize="@dimen/larger_label"
                     android:text="@string/description"/>
                 <TextView
                     android:id="@+id/tvDescription"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:textSize="@dimen/large_label"
                     android:layout_marginBottom="16dp"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/large_label"
+                    android:textSize="@dimen/larger_label"
                     android:text="@string/sessions"/>
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -171,13 +174,13 @@
                         android:layout_height="wrap_content"
                         android:text="@string/city2"
                         android:layout_marginEnd="4dp"
-                        android:textSize="@dimen/large_label"/>
+                        android:textSize="@dimen/larger_label"/>
 
                     <TextView
                         android:id="@+id/tvCity"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="" />
+                        android:textSize="@dimen/larger_label" />
                 </LinearLayout>
 
                 <LinearLayout
@@ -191,13 +194,13 @@
                         android:layout_height="wrap_content"
                         android:text="@string/location"
                         android:layout_marginEnd="4dp"
-                        android:textSize="@dimen/large_label"/>
+                        android:textSize="@dimen/larger_label"/>
 
                     <TextView
                         android:id="@+id/tvLocation"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""/>
+                        android:textSize="@dimen/larger_label"/>
                 </LinearLayout>
 
                 <LinearLayout
@@ -222,13 +225,13 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="@dimen/large_label"
+                    android:textSize="@dimen/larger_label"
                     android:text="@string/categories"/>
                 <TextView
                     android:id="@+id/tvCategories"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text=""
+                    android:textSize="@dimen/large_label"
                     android:layout_marginBottom="16dp"/>
 
                 <LinearLayout
@@ -242,32 +245,35 @@
                         android:layout_height="wrap_content"
                         android:text="@string/canceled_on"
                         android:layout_marginEnd="4dp"
-                        android:textSize="@dimen/large_label"/>
+                        android:textSize="@dimen/larger_label"/>
 
                     <TextView
                         android:id="@+id/tvCancellationDateTime"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text=""/>
+                        android:textSize="@dimen/larger_label"/>
                 </LinearLayout>
-            <LinearLayout
-                android:id="@+id/llCancellationReason"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:layout_marginBottom="16dp">
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:textSize="@dimen/large_label"
-                        android:text="@string/cancellation_reason"/>
-                    <TextView
-                        android:id="@+id/tvCancellationReason"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="" />
-            </LinearLayout>
-
+                <LinearLayout
+                    android:id="@+id/llCancellationReason"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:layout_marginBottom="16dp">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/larger_label"
+                            android:text="@string/cancellation_reason"/>
+                        <TextView
+                            android:id="@+id/tvCancellationReason"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textSize="@dimen/large_label"/>
+                </LinearLayout>
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginBottom="48dp"/>
             </LinearLayout>
         </ScrollView>
     </LinearLayout>
@@ -278,8 +284,9 @@
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:text="Register"
-        app:icon = "@drawable/ic_temp"
-        android:layout_margin="32dp"
+        app:icon = "@drawable/ic_register"
+        android:layout_marginEnd="32dp"
+        android:layout_marginBottom="16dp"
         android:visibility="invisible"/>
 
     <ProgressBar

@@ -47,14 +47,6 @@ class ViewEventActivity : AppCompatActivity() {
                 ,getString(R.string.Aqaba),getString(R.string.Maan),getString(R.string.Tafila))
         eventID = intent.getLongExtra("eventID", -1)
         getAndLoadEvent()
-        binding.svMain.setOnScrollChangeListener { v, scrollX, scrollY, oldScrollX, oldScrollY ->
-            if (scrollY > oldScrollY){
-                binding.btnAction.shrink()
-            }
-            else{
-                binding.btnAction.extend()
-            }
-        }
 
     }
 
@@ -121,6 +113,8 @@ class ViewEventActivity : AppCompatActivity() {
             intent.putExtra("organizerID", event.organizerID)
             startActivity(intent)
         }
+
+        updateParticipantStatus()
 
         val layoutManager = object: LinearLayoutManager(this) {
             override fun canScrollVertically():Boolean =  false
@@ -319,20 +313,6 @@ class ViewEventActivity : AppCompatActivity() {
                 })
     }
 
-
-    private fun getParticipantStatus(): String{
-        if (event.hasParticipantAttended == ParticipantAttendanceStatus.TRUE.ordinal){
-            return "You attended this event"
-        }
-        else if (event.isParticipantRegistered){
-            return "You are registered in this event"
-        }
-        else{
-            binding.tvParticipantStatus.visibility = View.GONE
-            return ""
-        }
-    }
-
     private fun updateRegisterButton(){
         if (!event.isRegistrationClosed() && !event.isParticipantRegistered) {
             binding.btnAction.text = getString(R.string.register)
@@ -351,6 +331,17 @@ class ViewEventActivity : AppCompatActivity() {
             else{
                 binding.btnAction.visibility = View.INVISIBLE
             }
+        }
+        updateParticipantStatus()
+    }
+
+    private fun updateParticipantStatus(){
+        if (event.getCurrentParticipantStatus() == ""){
+            binding.tvParticipantStatus.visibility = View.GONE
+        }
+        else{
+            binding.tvParticipantStatus.visibility = View.VISIBLE
+            binding.tvParticipantStatus.text = event.getCurrentParticipantStatus()
         }
     }
 

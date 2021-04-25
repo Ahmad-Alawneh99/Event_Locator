@@ -111,4 +111,5 @@
     <string name="search">Search</string>
     <string name="login_error">Wrong email/password combination</string>
     <string name="click_to_view_location">Click to view location</string>
+    <string name="event_category_error">At least one category is required</string>
 </resources>

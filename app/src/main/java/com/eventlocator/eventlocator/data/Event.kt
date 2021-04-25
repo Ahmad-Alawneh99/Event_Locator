@@ -102,4 +102,19 @@ class Event(var id: Long, var name: String, var description: String, var categor
     fun isFull(): Boolean{
         return this.maxParticipants!=-1 && this.maxParticipants == this.currentNumberOfParticipants
     }
+
+    fun getCurrentParticipantStatus(): String{
+        return if (this.hasParticipantAttended == ParticipantAttendanceStatus.TRUE.ordinal){
+            if (this.feedback!=null){
+                "You left feedback for the event"
+            }
+            else  "You attended this event"
+        }
+        else if (this.isParticipantRegistered){
+            "You are registered in this event"
+        }
+        else{
+            ""
+        }
+    }
 }

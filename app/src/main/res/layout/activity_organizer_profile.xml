@@ -131,31 +131,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/email"
-                    android:textSize="@dimen/large_label" />
+                    android:textSize="@dimen/larger_label" />
 
                 <TextView
                     android:id="@+id/tvEmail"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="16dp"
+                    android:textSize="@dimen/large_label"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/about_the_organizer"
-                    android:textSize="@dimen/large_label" />
+                    android:textSize="@dimen/larger_label" />
 
                 <TextView
                     android:id="@+id/tvAbout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginBottom="16dp" />
+                    android:layout_marginBottom="16dp"
+                    android:textSize="@dimen/large_label"/>
 
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/social_media_accounts"
-                    android:textSize="@dimen/large_label" />
+                    android:textSize="@dimen/larger_label" />
 
                 <LinearLayout
                     android:id="@+id/llSocialMedia"
