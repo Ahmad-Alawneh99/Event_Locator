@@ -24,10 +24,10 @@ interface EventService {
     fun getParticipantEvents(): Call<ArrayList<Event>>
 
     @POST("/participants/event/{id}/register")
-    fun registerParticipantInEvent(@Path("id") eventID: Long): Call<ResponseBody>
+    fun registerParticipantInEvent(@Path("id") eventID: Long, @Body token: ArrayList<String>): Call<ResponseBody>
 
     @POST("/participants/event/{id}/unregister")
-    fun unregisterParticipantInEvent(@Path("id") eventID: Long): Call<ResponseBody>
+    fun unregisterParticipantInEvent(@Path("id") eventID: Long, @Body token: ArrayList<String>): Call<ResponseBody>
 
     @POST("/{id}") //TODO: Specify actual router
     fun addParticipantRating(@Path("id") eventID: Long ,@Body feedback: Feedback): Call<ResponseBody>

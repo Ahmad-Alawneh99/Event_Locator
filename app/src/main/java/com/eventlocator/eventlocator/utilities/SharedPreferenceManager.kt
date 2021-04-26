@@ -5,6 +5,7 @@ class SharedPreferenceManager {
     val TOKEN_KEY = "Token"
     val FIRST_TIME_KEY = "FirstTime?"
     val PARTICIPANT_ID_KEY = "participant"
+    val FIREASE_TOKEN_KEY = "firebase"
     companion object{
         val instance: SharedPreferenceManager = SharedPreferenceManager()
     }

@@ -239,9 +239,10 @@ class ViewEventActivity : AppCompatActivity() {
     private fun register(){
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
-
+        val data = ArrayList<String>()
+        data.add(MessagingService().getToken(this))
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
-                .registerParticipantInEvent(event.id).enqueue(object: Callback<ResponseBody>{
+                .registerParticipantInEvent(event.id, data).enqueue(object: Callback<ResponseBody>{
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code()==202){
                             event.isParticipantRegistered = true
@@ -279,9 +280,10 @@ class ViewEventActivity : AppCompatActivity() {
     private fun unregister(){
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
-
+        val data = ArrayList<String>()
+        data.add(MessagingService().getToken(this))
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
-                .unregisterParticipantInEvent(event.id).enqueue(object: Callback<ResponseBody>{
+                .unregisterParticipantInEvent(event.id, data).enqueue(object: Callback<ResponseBody>{
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code()==202){
                             event.isParticipantRegistered = false
