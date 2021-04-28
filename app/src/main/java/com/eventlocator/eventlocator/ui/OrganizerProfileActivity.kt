@@ -63,6 +63,11 @@ class OrganizerProfileActivity : AppCompatActivity() {
                             if (organizer.image != "") {
                                 binding.ivOrgImage.setImageBitmap(BitmapFactory.decodeStream(
                                         ByteArrayInputStream(Base64.decode(organizer.image, Base64.DEFAULT))))
+                                binding.ivOrgImage.setOnClickListener {
+                                    val intent = Intent(this@OrganizerProfileActivity, ViewImageActivity::class.java)
+                                    intent.putExtra("image",organizer.image)
+                                    startActivity(intent)
+                                }
                             }
                             if (organizer.isFollowedByCurrentParticipant) {
                                 binding.btnFollowOrUnfollow.text = getString(R.string.unfollow)

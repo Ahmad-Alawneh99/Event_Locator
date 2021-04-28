@@ -1,5 +1,6 @@
 package com.eventlocator.eventlocator.ui
 
+import android.content.DialogInterface
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.text.Editable
@@ -63,45 +64,51 @@ class RateEventActivity : AppCompatActivity() {
         }
 
         binding.btnSave.setOnClickListener {
-            binding.pbLoading.visibility = View.VISIBLE
-            val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
-                    .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+            val dialogAlert = Utils.instance.createSimpleDialog(this, "Rate", "Are you sure that you want to submit this rating for this event?")
+            dialogAlert.setPositiveButton("Yes"){di: DialogInterface, i: Int ->
+                binding.pbLoading.visibility = View.VISIBLE
+                val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                        .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
 
-            val feedback = Feedback(binding.rbRating.rating.toDouble(), binding.etFeedback.text.toString().trim())
+                val feedback = Feedback(binding.rbRating.rating.toDouble(), binding.etFeedback.text.toString().trim())
 
-            RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
-                    .addParticipantRating(eventID, feedback).enqueue(object: Callback<ResponseBody> {
+                RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
+                        .addParticipantRating(eventID, feedback).enqueue(object: Callback<ResponseBody> {
 
-                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                            if (response.code() == 200){
+                            override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                                if (response.code() == 200){
 
+                                }
+                                else if (response.code() == 401) {
+                                    Utils.instance.displayInformationalDialog(this@RateEventActivity,
+                                            "Error", "401: Unauthorized access", true)
+                                }
+                                else if (response.code() == 406) {
+                                    Utils.instance.displayInformationalDialog(this@RateEventActivity,
+                                            "Error", "Participant or event not found", true)
+                                }
+                                else if (response.code() == 409) {
+                                    Utils.instance.displayInformationalDialog(this@RateEventActivity,
+                                            "Error", "Already added feedback", true)
+                                }
+                                else if (response.code() == 500) {
+                                    Utils.instance.displayInformationalDialog(this@RateEventActivity,
+                                            "Error", "Server issue, please try again later", false)
+                                }
+                                binding.pbLoading.visibility = View.INVISIBLE
                             }
-                            else if (response.code() == 401) {
-                            Utils.instance.displayInformationalDialog(this@RateEventActivity,
-                                        "Error", "401: Unauthorized access", true)
-                            }
-                            else if (response.code() == 406) {
+
+                            override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                                 Utils.instance.displayInformationalDialog(this@RateEventActivity,
-                                        "Error", "Participant or event not found", true)
+                                        "Error", "Can't connect to server", true)
+                                binding.pbLoading.visibility = View.INVISIBLE
                             }
-                            else if (response.code() == 409) {
-                                Utils.instance.displayInformationalDialog(this@RateEventActivity,
-                                        "Error", "Already added feedback", true)
-                            }
-                            else if (response.code() == 500) {
-                                Utils.instance.displayInformationalDialog(this@RateEventActivity,
-                                        "Error", "Server issue, please try again later", false)
-                            }
-                            binding.pbLoading.visibility = View.INVISIBLE
-                        }
 
-                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                            Utils.instance.displayInformationalDialog(this@RateEventActivity,
-                                    "Error", "Can't connect to server", true)
-                            binding.pbLoading.visibility = View.INVISIBLE
-                        }
+                        })
+            }
+            dialogAlert.setNegativeButton("No"){di: DialogInterface, i: Int -> }
+            dialogAlert.create().show()
 
-                    })
         }
 
     }

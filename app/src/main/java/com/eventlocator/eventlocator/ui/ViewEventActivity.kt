@@ -1,5 +1,6 @@
 package com.eventlocator.eventlocator.ui
 
+import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.location.Geocoder
@@ -248,6 +249,11 @@ class ViewEventActivity : AppCompatActivity() {
                             event.isParticipantRegistered = true
                             updateRegisterButton()
                             invalidateOptionsMenu()
+                            val startDate = LocalDate.from(DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).parse(event.startDate))
+                            val startTime = LocalTime.from(DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT).parse(event.sessions[0].startTime))
+                            val startDateTime = startDate.atTime(startTime)
+                            val message = "The event ${event.name} is starting in 12 hours, be sure to get ready"
+                            NotificationUtils.scheduleNotification(this@ViewEventActivity, startDateTime, event.id.toInt(),message,event.id)
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity, "Error",
@@ -288,6 +294,7 @@ class ViewEventActivity : AppCompatActivity() {
                         if (response.code()==202){
                             event.isParticipantRegistered = false
                             updateRegisterButton()
+                            NotificationUtils.cancelNotification(this@ViewEventActivity, eventID)
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity, "Error",
@@ -318,7 +325,15 @@ class ViewEventActivity : AppCompatActivity() {
     private fun updateRegisterButton(){
         if (!event.isRegistrationClosed() && !event.isParticipantRegistered) {
             binding.btnAction.text = getString(R.string.register)
-            binding.btnAction.setOnClickListener { register() }
+            binding.btnAction.setOnClickListener {
+                val dialogAlert = Utils.instance.createSimpleDialog(this, "Register", "Are you sure that you want to register in this event?")
+                dialogAlert.setPositiveButton("Yes"){di: DialogInterface, i: Int ->
+                    register()
+                }
+                dialogAlert.setNegativeButton("No"){di: DialogInterface, i: Int ->}
+                dialogAlert.create().show()
+
+            }
             binding.btnAction.visibility = View.VISIBLE
         } else if (event.isParticipantRegistered) {
             val eventStartDate = LocalDate.parse(event.startDate,
@@ -327,7 +342,14 @@ class ViewEventActivity : AppCompatActivity() {
                     DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
             if (eventStartDateTime.minusHours(12).isAfter(LocalDateTime.now())) {
                 binding.btnAction.text = getString(R.string.unregister)
-                binding.btnAction.setOnClickListener { unregister() }
+                binding.btnAction.setOnClickListener {
+                    val dialogAlert = Utils.instance.createSimpleDialog(this, "Unregister", "Are you sure that you want to unregister from this event?")
+                    dialogAlert.setPositiveButton("Yes"){di: DialogInterface, i: Int ->
+                        unregister()
+                    }
+                    dialogAlert.setNegativeButton("No"){di: DialogInterface, i: Int ->}
+                    dialogAlert.create().show()
+                }
                 binding.btnAction.visibility = View.VISIBLE
             }
             else{
