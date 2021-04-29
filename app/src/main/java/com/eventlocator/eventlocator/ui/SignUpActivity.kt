@@ -38,8 +38,8 @@ class SignUpActivity : AppCompatActivity() {
         binding.tlCityMenu.error = "City is required"
         binding.btnSignUp.setOnClickListener {
             binding.pbLoading.visibility = View.VISIBLE
+            binding.btnSignUp.isEnabled = false
 
-            //TODO: make the categories and city required
             val categories = ArrayList<Int>()
             if (binding.cbEducational.isChecked) categories.add(EventCategory.EDUCATIONAL.ordinal)
             if (binding.cbEntertainment.isChecked) categories.add(EventCategory.ENTERTAINMENT.ordinal)
@@ -72,12 +72,14 @@ class SignUpActivity : AppCompatActivity() {
                                     "Server issue, please try again later",false)
                         }
                         binding.pbLoading.visibility = View.INVISIBLE
+                        binding.btnSignUp.isEnabled = true
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
                                 "Can't connect to the server",false)
                         binding.pbLoading.visibility = View.INVISIBLE
+                        binding.btnSignUp.isEnabled = true
 
                     }
 

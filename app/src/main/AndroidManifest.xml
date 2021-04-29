@@ -47,7 +47,8 @@
             android:launchMode="singleTask" />
         <activity android:name=".ui.ChangePasswordActivity" />
         <activity android:name=".ui.UpdateEmailActivity" />
-        <activity android:name=".ui.EditProfileActivity" />
+        <activity android:name=".ui.EditProfileActivity"
+            android:launchMode="singleTask"/>
         <activity android:name=".ui.SignUpActivity" />
         <activity android:name=".ui.LoginActivity" />
         <activity android:name=".ui.WelcomeActivity" />
