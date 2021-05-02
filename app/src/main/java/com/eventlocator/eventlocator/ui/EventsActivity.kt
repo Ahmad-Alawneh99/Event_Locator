@@ -8,6 +8,8 @@ import android.view.MenuItem
 import android.view.View
 import android.widget.TextView
 import android.widget.Toast
+import androidx.activity.result.ActivityResultLauncher
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import androidx.core.view.GravityCompat
 import androidx.fragment.app.Fragment
@@ -33,6 +35,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
     lateinit var onUpcomingEventsByFollowedOrganizersReady: OnUpcomingEventsByFollowedOrganizersReady
     lateinit var participant: Participant
     lateinit var pagerAdapter: UpcomingEventsPagerAdapter
+    lateinit var editProfileActivityResult: ActivityResultLauncher<Intent>
     var filterFragment: Fragment? = null
     var currentPosition = 0
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -51,6 +54,9 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
             finish()
         }
         else {
+            editProfileActivityResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult()){result ->
+                getParticipantAndLoadEvents()
+            }
             getParticipantAndLoadEvents()
         }
     }
@@ -77,6 +83,15 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         a.addCategory(Intent.CATEGORY_HOME)
         a.flags = Intent.FLAG_ACTIVITY_NEW_TASK
         startActivity(a)
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
+                .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
+        if (token == "EMPTY"){
+            startActivity(Intent(this, LoginActivity::class.java))
+        }
     }
 
 
@@ -132,6 +147,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
     }
 
     private fun getParticipantAndLoadEvents(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java,token!!)
@@ -142,19 +158,26 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
                             getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                                 .edit().putLong(SharedPreferenceManager.instance.PARTICIPANT_ID_KEY, participant.id).apply()
                             loadEvents()
-                        } else if (response.code() == 401) {
+                        }
+                        else if (response.code() == 401) {
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
                                     "401: Unauthorized access", true)
-                            binding.pbLoading.visibility = View.INVISIBLE
-                        } else if (response.code() == 404) {
+                        }
+                        else if (response.code() == 403) {
+                            Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
+                                    "Your account has been suspended", true)
+                            getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE).edit()
+                                    .putString(SharedPreferenceManager.instance.TOKEN_KEY, null).apply()
+                        }
+                        else if (response.code() == 404) {
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
                                     "404: Information not found", true)
-                            binding.pbLoading.visibility = View.INVISIBLE
-                        } else if (response.code() == 500) {
+                        }
+                        else if (response.code() == 500) {
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
                                     "Server issue, please try again later", false)
-                            binding.pbLoading.visibility = View.INVISIBLE
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<Participant>, t: Throwable) {
@@ -203,9 +226,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         binding.nvParticipant.setNavigationItemSelectedListener { item: MenuItem ->
             when(item.itemId){
                 R.id.dmiMyEvents -> {
-                    val intent = Intent(this, ParticipantEventsActivity::class.java)
-                    intent.putExtra("participant", participant)
-                    startActivity(intent)
+                    startActivity(Intent(this, ParticipantEventsActivity::class.java))
                     binding.dlParticipant.closeDrawers()
                     true
                 }
@@ -220,7 +241,9 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
                     true
                 }
                 R.id.dmiEditProfile -> {
-                    //TODO: open edit profile
+                    val intent = Intent(this, EditProfileActivity::class.java)
+                    intent.putExtra("participant", participant)
+                    editProfileActivityResult.launch(intent)
                     binding.dlParticipant.closeDrawers()
                     true
                 }
@@ -230,7 +253,6 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
                     sharedPreferenceEditor.putString(SharedPreferenceManager.instance.TOKEN_KEY, null)
                     sharedPreferenceEditor.putLong(SharedPreferenceManager.instance.PARTICIPANT_ID_KEY, -1)
                     sharedPreferenceEditor.apply()
-                    //TODO: add confirmation box for logout
                     startActivity(Intent(this, LoginActivity::class.java))
                     binding.dlParticipant.closeDrawers()
                     true

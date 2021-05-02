@@ -45,9 +45,16 @@ class LoginActivity : AppCompatActivity() {
                                 sharedPreferenceEditor.apply()
                                 binding.tvError.visibility = View.INVISIBLE
                                 startActivity(Intent(applicationContext, EventsActivity::class.java))
-                            } else if (response.code() == 404) {
+                            }
+                            else if (response.code() == 403){
+                                binding.tvError.text = "Your account has been suspended due to low rating."
                                 binding.tvError.visibility = View.VISIBLE
-                            } else if (response.code() == 500) {
+                            }
+                            else if (response.code() == 404) {
+                                binding.tvError.text = "Wrong email and/or password."
+                                binding.tvError.visibility = View.VISIBLE
+                            }
+                            else if (response.code() == 500) {
                                 Utils.instance.displayInformationalDialog(this@LoginActivity, "Error",
                                         "Server issue, please try again later", false)
                                 binding.tvError.visibility = View.INVISIBLE

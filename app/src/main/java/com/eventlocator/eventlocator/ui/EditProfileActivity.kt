@@ -69,6 +69,10 @@ class EditProfileActivity : AppCompatActivity() {
                                     Utils.instance.displayInformationalDialog(this@EditProfileActivity, "Success",
                                             "Changes saved",true)
                                 }
+                                else if (response.code() == 401){
+                                    Utils.instance.displayInformationalDialog(this@EditProfileActivity, "Error",
+                                            "401: Unauthorized access",true)
+                                }
                                 else if (response.code() == 500){
                                     Utils.instance.displayInformationalDialog(this@EditProfileActivity, "Error",
                                             "Server issue, please try again later",false)

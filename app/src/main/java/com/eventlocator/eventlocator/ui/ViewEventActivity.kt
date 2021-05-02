@@ -1,9 +1,11 @@
 package com.eventlocator.eventlocator.ui
 
+import android.content.ActivityNotFoundException
 import android.content.DialogInterface
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.location.Geocoder
+import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Base64
@@ -26,6 +28,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.ByteArrayInputStream
 import java.math.BigDecimal
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
@@ -37,6 +41,10 @@ class ViewEventActivity : AppCompatActivity() {
     lateinit var event: Event
     var eventID: Long = -1
     lateinit var cities: List<String>
+    val view_qr_codes_id = 1
+    val rate_event_id = 2
+    val view_my_rating_id = 3
+    val share_on_twitter_id = 4
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityViewEventBinding.inflate(layoutInflater)
@@ -201,11 +209,23 @@ class ViewEventActivity : AppCompatActivity() {
         if (!this::event.isInitialized)return false
         if (!event.isCanceled()) {
             if (event.isFinished() && event.hasParticipantAttended == ParticipantAttendanceStatus.TRUE.ordinal) {
-                //TODO: Check if 48 hours passed and if participant already rated
-                menu?.add(1, 1, 1, "Rate event")
+                val endDate = LocalDate.from(DateTimeFormatterFactory
+                    .createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).parse(event.endDate))
+                val endTime = LocalTime.from(DateTimeFormatterFactory
+                    .createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT).parse(event.sessions[event.sessions.size].endTime))
+                var ratingEndDateTime = endDate.atTime(endTime)
+                ratingEndDateTime = ratingEndDateTime.plusHours(48)
+
+                if (event.feedback!=null){
+                    menu?.add(1, view_my_rating_id, 1, "View my rating")
+                }
+                else if(LocalDateTime.now().isBefore(ratingEndDateTime)){
+                    menu?.add(1, rate_event_id, 1, "Rate event")
+                }
+                menu?.add(1, share_on_twitter_id, 3, "Share on Twitter")
             }
             if (event.isParticipantRegistered && !event.isFinished() && event.isLimitedLocated()) {
-                menu?.add(1, 2, 2, "View QR codes")
+                menu?.add(1, view_qr_codes_id, 2, "View QR codes")
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -214,11 +234,13 @@ class ViewEventActivity : AppCompatActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
 
         when(item.itemId){
-            1 -> {
-
+            rate_event_id -> {
+                val intent = Intent(this, RateEventActivity::class.java)
+                intent.putExtra("eventID", event.id)
+                startActivity(intent)
             }
 
-            2 -> {
+            view_qr_codes_id -> {
                 val intent = Intent(this, QRCodesActivity::class.java)
                 intent.putExtra("eventID", eventID)
                 intent.putExtra("participantID", getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
@@ -227,8 +249,26 @@ class ViewEventActivity : AppCompatActivity() {
                 startActivity(intent)
             }
 
-            3 -> {
+            view_my_rating_id -> {
+                val intent = Intent(this, ViewMyFeedbackActivity::class.java)
+                intent.putExtra("feedback", event.feedback!!)
+                startActivity(intent)
+            }
 
+            share_on_twitter_id -> {
+                val message = "I'm planning to attend ${event.name} on EventLocator app, join me!"
+                var intent = Intent(Intent.ACTION_SEND)
+                intent.type = "text/plain"
+                intent.setPackage("com.twitter.android")
+                intent.putExtra(Intent.EXTRA_TEXT, message)
+                try {
+                    startActivity(intent)
+                } catch (ex: ActivityNotFoundException) {
+                    val tweetUrl = "https://twitter.com/intent/tweet?text=" + URLEncoder.encode(message, StandardCharsets.UTF_8.toString())
+                    val uri: Uri = Uri.parse(tweetUrl)
+                    intent = Intent(Intent.ACTION_VIEW, uri)
+                    startActivity(intent)
+                }
             }
         }
 
@@ -238,6 +278,8 @@ class ViewEventActivity : AppCompatActivity() {
     }
 
     private fun register(){
+        binding.btnAction.visibility = View.INVISIBLE
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         val data = ArrayList<String>()
@@ -253,7 +295,7 @@ class ViewEventActivity : AppCompatActivity() {
                             val startTime = LocalTime.from(DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT).parse(event.sessions[0].startTime))
                             val startDateTime = startDate.atTime(startTime)
                             val message = "The event ${event.name} is starting in 12 hours, be sure to get ready"
-                            NotificationUtils.scheduleNotification(this@ViewEventActivity, startDateTime, event.id.toInt(),message,event.id)
+                            NotificationUtils.scheduleNotification(this@ViewEventActivity, startDateTime.minusHours(12), event.id.toInt(),message,event.id)
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity, "Error",
@@ -273,17 +315,23 @@ class ViewEventActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                     "Error", "Server issue, please try again later", true)
                         }
+                        binding.btnAction.visibility = View.VISIBLE
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                 "Error", t.message!!.toString(), true)
+                        binding.btnAction.visibility = View.VISIBLE
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
     }
 
     private fun unregister(){
+        binding.btnAction.visibility = View.INVISIBLE
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         val data = ArrayList<String>()
@@ -312,11 +360,15 @@ class ViewEventActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                     "Error", "Server issue, please try again later", true)
                         }
+                        binding.btnAction.visibility = View.VISIBLE
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                 "Error", t.message!!.toString(), true)
+                        binding.btnAction.visibility = View.VISIBLE
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })

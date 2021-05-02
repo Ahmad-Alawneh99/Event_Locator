@@ -13,48 +13,68 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocator"
         android:usesCleartextTraffic="true">
+        <activity android:name=".ui.ViewMyFeedbackActivity"></activity>
+
         <service
-            android:name="com.eventlocator.eventlocator.utilities.MessagingService"
-            android:stopWithTask="false"
+            android:name=".utilities.MessagingService"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true"
+            android:stopWithTask="false">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="AIzaSyDplPLPkGMXu35fWIZlG4n_x7xzarQjhMk" />
-        <activity android:name=".ui.ViewImageActivity"
-            android:theme="@style/Theme.EventLocator.NoActionBar"></activity>
+
+        <activity
+            android:name=".ui.ViewImageActivity"
+            android:theme="@style/Theme.EventLocator.NoActionBar" />
         <activity
             android:name=".ui.ViewLocationActivity"
-            android:parentActivityName=".ui.ViewEventActivity">
+            android:parentActivityName=".ui.ViewEventActivity"
+            android:label="View Location">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".ui.ViewEventActivity" />
         </activity>
-        <activity android:name=".ui.QRCodesActivity"></activity>
-        <activity android:name=".ui.SearchOrganizersActivity" />
-        <activity android:name=".ui.FollowedOrganizersActivity" />
-        <activity android:name=".ui.RateEventActivity" />
-        <activity android:name=".ui.OrganizerEventsActivity"
-            android:launchMode="singleTask"/>
+        <activity android:name=".ui.QRCodesActivity"
+            android:label="QRCodes"/>
+        <activity android:name=".ui.SearchOrganizersActivity"
+            android:label="Search Organizers"/>
+        <activity android:name=".ui.FollowedOrganizersActivity"
+            android:label="Followed Organizers"/>
+        <activity android:name=".ui.RateEventActivity"
+            android:label="Rate Event"/>
         <activity
-            android:name=".ui.ViewEventActivity" />
+            android:name=".ui.OrganizerEventsActivity"
+            android:launchMode="singleTask"
+            android:label="Organizer's Events"/>
+        <activity android:name=".ui.ViewEventActivity" />
         <activity
             android:name=".ui.OrganizerProfileActivity"
+            android:label="Organizer's Profile"
             android:launchMode="singleTask" />
-        <activity android:name=".ui.ChangePasswordActivity" />
-        <activity android:name=".ui.UpdateEmailActivity" />
-        <activity android:name=".ui.EditProfileActivity"
-            android:launchMode="singleTask"/>
-        <activity android:name=".ui.SignUpActivity" />
-        <activity android:name=".ui.LoginActivity" />
-        <activity android:name=".ui.WelcomeActivity" />
+        <activity android:name=".ui.ChangePasswordActivity"
+            android:label="Change Password"/>
+        <activity android:name=".ui.UpdateEmailActivity"
+            android:label="Update Email"/>
+        <activity
+            android:name=".ui.EditProfileActivity"
+            android:launchMode="singleTask"
+            android:label="Edit Profile"/>
+        <activity android:name=".ui.SignUpActivity"
+            android:label="Sign Up"/>
+        <activity android:name=".ui.LoginActivity"
+            android:label="Login"/>
+        <activity android:name=".ui.WelcomeActivity"
+            android:label="Welcome"/>
         <activity
             android:name=".ui.EventsActivity"
             android:launchMode="singleTask"
+            android:label="Events"
             android:theme="@style/Theme.EventLocator.NoActionBar">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -65,6 +85,7 @@
         <activity
             android:name=".ui.ParticipantEventsActivity"
             android:launchMode="singleTask"
+            android:label="My Events"
             android:theme="@style/Theme.EventLocator.NoActionBar" />
     </application>
 

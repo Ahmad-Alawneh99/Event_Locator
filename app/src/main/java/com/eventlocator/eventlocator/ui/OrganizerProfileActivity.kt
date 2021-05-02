@@ -112,12 +112,13 @@ class OrganizerProfileActivity : AppCompatActivity() {
                 binding.llSocialMedia[i].visibility = View.GONE
             }
             else{
+                binding.llSocialMedia[i].visibility = View.VISIBLE
                 when (i){
                     0 -> {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -132,7 +133,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -147,7 +148,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -162,7 +163,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
@@ -177,7 +178,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
                         binding.llSocialMedia[i].setOnClickListener {
                             if (organizer.socialMediaAccounts[i].url!=""){
                                 val intent = Intent(Intent.ACTION_VIEW,
-                                        Uri.parse(organizer.socialMediaAccounts[i].url))
+                                        Uri.parse("http://"+organizer.socialMediaAccounts[i].url))
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
