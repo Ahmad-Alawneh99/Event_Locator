@@ -301,6 +301,10 @@ class ViewEventActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity, "Error",
                                     "401: Unauthorized access",true)
                         }
+                        else if (response.code() == 403){
+                            Utils.instance.displayInformationalDialog(this@ViewEventActivity, "Error",
+                                    "You are registered in another event that happens at the same time as this one",false)
+                        }
                         else if (response.code() == 409){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                     "Error", "Event is full", false)
@@ -313,7 +317,7 @@ class ViewEventActivity : AppCompatActivity() {
                         }
                         else if (response.code() == 500){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
-                                    "Error", "Server issue, please try again later", true)
+                                    "Error", "Server issue, please try again later", false)
                         }
                         binding.btnAction.visibility = View.VISIBLE
                         binding.pbLoading.visibility = View.INVISIBLE

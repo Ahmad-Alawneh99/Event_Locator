@@ -29,7 +29,7 @@ interface EventService {
     @POST("/participants/event/{id}/unregister")
     fun unregisterParticipantInEvent(@Path("id") eventID: Long, @Body token: ArrayList<String>): Call<ResponseBody>
 
-    @POST("/{id}") //TODO: Specify actual router
+    @POST("/participants/event/{id}/rate")
     fun addParticipantRating(@Path("id") eventID: Long ,@Body feedback: Feedback): Call<ResponseBody>
 
 }
