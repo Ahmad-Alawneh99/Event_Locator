@@ -22,7 +22,6 @@ class MessagingService: FirebaseMessagingService() {
 
     override fun onMessageReceived(p0: RemoteMessage) {
         super.onMessageReceived(p0)
-        Log.e("MESSAGE", "REceived")
         val notification = NotificationUtils.createNotification(this, NotificationUtils.UPDATES_CHANNEL_ID,
                 p0.data["title"]!!, p0.data["message"]!!, R.drawable.ic_info)
 

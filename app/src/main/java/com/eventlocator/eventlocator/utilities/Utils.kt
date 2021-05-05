@@ -47,23 +47,6 @@ class Utils {
         return c in 'a'..'z' || c in 'A'..'Z'
     }
 
-    private fun isDigit(c: Char): Boolean{
-        return c in '0'..'9'
-    }
-
-    fun uriToBitmap(selectedFileUri: Uri, context: Context): Bitmap? {
-        try {
-            val parcelFileDescriptor: ParcelFileDescriptor? = context.contentResolver.openFileDescriptor(selectedFileUri, "r")
-            val fileDescriptor: FileDescriptor? = parcelFileDescriptor?.fileDescriptor
-            val image = BitmapFactory.decodeFileDescriptor(fileDescriptor)
-            parcelFileDescriptor?.close()
-            return image
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return null
-    }
-
     fun countWords(s: String): Int {
         var count = 0
         var res = s.split(' ')

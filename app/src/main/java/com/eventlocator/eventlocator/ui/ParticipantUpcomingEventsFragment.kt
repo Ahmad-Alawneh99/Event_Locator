@@ -28,7 +28,6 @@ class ParticipantUpcomingEventsFragment(val events: ArrayList<Event>): Fragment(
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val status = ArrayList<String>()
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvents.layoutManager = layoutManager
 

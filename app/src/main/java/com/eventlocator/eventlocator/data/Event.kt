@@ -84,21 +84,6 @@ class Event(var id: Long, var name: String, var description: String, var categor
         return null
     }
 
-    fun getCurrentLimitedSessionIncludingCheckInTime(): Session?{
-        for(j in 0 until sessions.size) {
-            val sessionDate = LocalDate.parse(sessions[j].date,
-                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-            val sessionCheckInDateTime = sessionDate.atTime(LocalTime.parse(sessions[j].checkInTime,
-                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-            val sessionEndDateTime = sessionDate.atTime(LocalTime.parse(sessions[j].endTime,
-                    DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-            if (LocalDateTime.now().isAfter(sessionCheckInDateTime) && LocalDateTime.now().isBefore(sessionEndDateTime)) {
-                return sessions[j]
-            }
-        }
-        return null
-    }
-
     fun isFull(): Boolean{
         return this.maxParticipants!=-1 && this.maxParticipants == this.currentNumberOfParticipants
     }

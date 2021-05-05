@@ -70,11 +70,6 @@ class UpcomingEventsByFollowedOrganizersFragment: Fragment(), OnUpcomingEventsBy
                             Utils.instance.displayInformationalDialog(this@UpcomingEventsByFollowedOrganizersFragment.requireContext(),
                                     "Error", "401: Unauthorized access",true)
                         }
-                        else if (response.code()==404){
-                            //TODO: Find a better way to do this
-                            Utils.instance.displayInformationalDialog(this@UpcomingEventsByFollowedOrganizersFragment.requireContext(),
-                                    "Error", "No events found",false)
-                        }
                         else if (response.code()==500){
                             Utils.instance.displayInformationalDialog(this@UpcomingEventsByFollowedOrganizersFragment.requireContext(),
                                     "Error", "Server issue, please try again later",false)
