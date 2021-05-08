@@ -57,14 +57,6 @@ class Event(var id: Long, var name: String, var description: String, var categor
         return LocalDateTime.now().isAfter(eventEndDateTime)
     }
 
-    fun hasStarted(): Boolean{
-        val eventStartDate = LocalDate.parse(startDate,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
-        val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(sessions[0].startTime,
-                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
-        return LocalDateTime.now().isAfter(eventStartDateTime)
-    }
-
     fun isLimitedLocated():Boolean{
         return maxParticipants!=-1 && locatedEventData!=null
     }

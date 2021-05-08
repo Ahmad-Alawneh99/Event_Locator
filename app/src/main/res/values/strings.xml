@@ -84,13 +84,6 @@
     <string name="Maan">Ma\'an</string>
     <string name="Tafila">Al-Tafila</string>
 
-    <!-- TODO: Delete if not used -->
-    <string name="registration_ongoing">Registration ongoing</string>
-    <string name="registration_closed">Registration closed</string>
-    <string name="session_happening_right_now">A session is happening right now!</string>
-    <string name="active">Active</string>
-    <!-- TODO: Delete if not used -->
-
     <string name="upcoming_events_by_followed_organizers">Upcoming events by followed organizers</string>
     <string name="sunday">Sunday</string>
     <string name="monday">Monday</string>
