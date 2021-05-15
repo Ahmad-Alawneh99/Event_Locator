@@ -43,9 +43,9 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         binding = ActivityEventsBinding.inflate(layoutInflater)
         setContentView(binding.root)
         setSupportActionBar(binding.mtbToolbar)
-
+        title = "Events"
         val sharedPreferences = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
-        if (sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
+        if (!sharedPreferences.contains(SharedPreferenceManager.instance.FIRST_TIME_KEY)){
             startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
         }
