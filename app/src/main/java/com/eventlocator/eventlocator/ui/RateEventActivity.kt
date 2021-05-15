@@ -77,7 +77,8 @@ class RateEventActivity : AppCompatActivity() {
 
                             override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                                 if (response.code() == 200){
-
+                                    Utils.instance.displayInformationalDialog(this@RateEventActivity,
+                                            "Success", "Rating added successfully", true)
                                 }
                                 else if (response.code() == 401) {
                                     Utils.instance.displayInformationalDialog(this@RateEventActivity,

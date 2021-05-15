@@ -325,7 +325,7 @@ class ViewEventActivity : AppCompatActivity() {
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
-                                "Error", t.message!!.toString(), true)
+                                "Error", "Can't connect to the server", true)
                         binding.btnAction.visibility = View.VISIBLE
                         binding.pbLoading.visibility = View.INVISIBLE
                     }

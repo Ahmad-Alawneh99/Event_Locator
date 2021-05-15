@@ -175,7 +175,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
                         }
                         else if (response.code() == 500) {
                             Utils.instance.displayInformationalDialog(this@EventsActivity, "Error",
-                                    "Server issue, please try again later", false)
+                                    "Server issue, please try again later", true)
                         }
                         binding.pbLoading.visibility = View.INVISIBLE
                     }
