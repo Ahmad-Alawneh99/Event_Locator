@@ -71,6 +71,7 @@ class ParticipantEventsActivity : AppCompatActivity() {
                     sharedPreferenceEditor.apply()
                     binding.dlParticipant.closeDrawers()
                     startActivity(Intent(this, LoginActivity::class.java))
+                    finish()
                     true
                 }
                 else -> {

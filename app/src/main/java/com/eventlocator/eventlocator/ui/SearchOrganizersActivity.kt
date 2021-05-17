@@ -46,20 +46,24 @@ class SearchOrganizersActivity : AppCompatActivity() {
                             val layoutManager = LinearLayoutManager(this@SearchOrganizersActivity,
                                     LinearLayoutManager.VERTICAL, false)
                             binding.rvOrganizers.layoutManager = layoutManager
-                            if (result.size == 0){
-                                Utils.instance.displayInformationalDialog(this@SearchOrganizersActivity,
-                                        "Error", "No matching organizers found", false)
+                            if (result.size == 0) {
+                                Toast.makeText(this@SearchOrganizersActivity, "No matching organizers found", Toast.LENGTH_SHORT).show()
                                 binding.rvOrganizers.adapter = null
                             }
-                            val adapter = OrganizerAdapter(result)
-                            binding.rvOrganizers.adapter = adapter
-                        } else if (response.code() == 401) {
+                            else {
+                                val adapter = OrganizerAdapter(result)
+                                binding.rvOrganizers.adapter = adapter
+                            }
+                        }
+                        else if (response.code() == 401) {
                             Utils.instance.displayInformationalDialog(this@SearchOrganizersActivity,
                                     "Error", "401: Unauthorized access", true)
-                        } else if (response.code() == 404) {
+                        }
+                        else if (response.code() == 404) {
                             Utils.instance.displayInformationalDialog(this@SearchOrganizersActivity,
                                     "Error", "No organizers found", false)
-                        } else if (response.code() == 500) {
+                        }
+                        else if (response.code() == 500) {
                             Utils.instance.displayInformationalDialog(this@SearchOrganizersActivity,
                                     "Error", "Server issue, please try again later", true)
                         }

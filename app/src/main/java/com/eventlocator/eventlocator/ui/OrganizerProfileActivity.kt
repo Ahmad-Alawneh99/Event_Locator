@@ -196,6 +196,7 @@ class OrganizerProfileActivity : AppCompatActivity() {
     }
 
     fun followOrganizer(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java, token!!)
@@ -223,11 +224,13 @@ class OrganizerProfileActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
                                     "Error", "Server issue, please try again later", false)
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
                                 "Error", "Can't connect to server", false)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                 })
@@ -236,12 +239,12 @@ class OrganizerProfileActivity : AppCompatActivity() {
     }
 
     fun unfollowOrganizer(){
+        binding.pbLoading.visibility = View.VISIBLE
         val token = getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE, MODE_PRIVATE)
                 .getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(ParticipantService::class.java, token!!)
                 .unfollowOrganizer(organizerID).enqueue(object: Callback<ResponseBody>{
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        Toast.makeText(this@OrganizerProfileActivity, response.code().toString(), Toast.LENGTH_LONG).show()
                         if (response.code()==200){
                             organizer.isFollowedByCurrentParticipant = false
                             binding.tvFollowers.text = (binding.tvFollowers.text.toString().toInt() - 1).toString()
@@ -264,12 +267,15 @@ class OrganizerProfileActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
                                     "Error", "Server issue, please try again later", false)
                         }
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@OrganizerProfileActivity,
                                 "Error", "Can't connect to server", false)
+                        binding.pbLoading.visibility = View.INVISIBLE
                     }
+
 
                 })
 

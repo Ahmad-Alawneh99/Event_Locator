@@ -49,7 +49,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
             startActivity(Intent(this, WelcomeActivity::class.java))
             finish()
         }
-        else if (sharedPreferences.getString(SharedPreferenceManager.instance.TOKEN_KEY,"") ==""){
+        if (sharedPreferences.getString(SharedPreferenceManager.instance.TOKEN_KEY,"") ==""){
             startActivity(Intent(this,LoginActivity::class.java))
             finish()
         }
@@ -255,6 +255,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
                     sharedPreferenceEditor.apply()
                     startActivity(Intent(this, LoginActivity::class.java))
                     binding.dlParticipant.closeDrawers()
+                    finish()
                     true
                 }
                 else -> {

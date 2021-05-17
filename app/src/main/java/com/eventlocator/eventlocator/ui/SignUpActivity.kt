@@ -58,32 +58,31 @@ class SignUpActivity : AppCompatActivity() {
 
 
             RetrofitServiceFactory.createService(ParticipantService::class.java)
-                .createParticipant(participant).enqueue(object: Callback<ResponseBody>{
-                    override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
-                        if (response.code() == 201){
-                            startActivity(Intent(this@SignUpActivity, LoginActivity::class.java))
+                .createParticipant(participant).enqueue(object : Callback<ResponseBody> {
+                        override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
+                            if (response.code() == 201) {
+                                Toast.makeText(applicationContext, "Success", Toast.LENGTH_SHORT).show()
+                                startActivity(Intent(this@SignUpActivity, LoginActivity::class.java))
+                            } else if (response.code() == 409) {
+                                Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
+                                        "Email already exists, please use a different email", false)
+                            } else if (response.code() == 500) {
+                                Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
+                                        "Server issue, please try again later", false)
+                            }
+                            binding.pbLoading.visibility = View.INVISIBLE
+                            binding.btnSignUp.isEnabled = true
                         }
-                        else if (response.code() == 409){
+
+                        override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                             Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
-                                    "Email already exists, please use a different email",false)
+                                    "Can't connect to the server", false)
+                            binding.pbLoading.visibility = View.INVISIBLE
+                            binding.btnSignUp.isEnabled = true
+
                         }
-                        else if (response.code()==500){
-                            Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
-                                    "Server issue, please try again later",false)
-                        }
-                        binding.pbLoading.visibility = View.INVISIBLE
-                        binding.btnSignUp.isEnabled = true
-                    }
 
-                    override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
-                        Utils.instance.displayInformationalDialog(this@SignUpActivity, "Error",
-                                "Can't connect to the server",false)
-                        binding.pbLoading.visibility = View.INVISIBLE
-                        binding.btnSignUp.isEnabled = true
-
-                    }
-
-                })
+                    })
         }
 
         binding.etEmail.addTextChangedListener(object : TextWatcher {
