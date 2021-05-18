@@ -122,10 +122,8 @@ class OrganizerProfileActivity : AppCompatActivity() {
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
-                                val url = "https://www.facebook.com/search/top?q="+
-                                        URLEncoder.encode(organizer.socialMediaAccounts[i].accountName, "UTF-8")
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                startActivity(intent)
+                                Utils.instance.displayInformationalDialog(this, "Facebook",
+                                        "Search ${organizer.socialMediaAccounts[i].accountName} on Facebook", false)
                             }
                         }
                     }
@@ -152,10 +150,8 @@ class OrganizerProfileActivity : AppCompatActivity() {
                                 startActivity(intent)
                             }
                             else if (organizer.socialMediaAccounts[i].accountName!=""){
-                                val url = "https://www.instagram.com/"+
-                                        organizer.socialMediaAccounts[i].accountName
-                                val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
-                                startActivity(intent)
+                                Utils.instance.displayInformationalDialog(this, "Instagram",
+                                        "Search ${organizer.socialMediaAccounts[i].accountName} on Instagram", false)
                             }
                         }
                     }

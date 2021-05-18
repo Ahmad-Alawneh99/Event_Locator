@@ -76,7 +76,6 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
                                 }
                             }
 
-
                             val adapter = UpcomingEventAdapter(initialEvents)
                             val layoutManager = LinearLayoutManager(requireContext())
                             binding.rvEvents.layoutManager = layoutManager

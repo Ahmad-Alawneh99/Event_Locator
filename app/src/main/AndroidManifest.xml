@@ -13,7 +13,8 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocator"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.ViewMyFeedbackActivity"></activity>
+        <activity android:name=".ui.ViewMyFeedbackActivity"
+            android:label="Feedback"></activity>
 
         <service
             android:name=".utilities.MessagingService"
@@ -52,7 +53,8 @@
             android:name=".ui.OrganizerEventsActivity"
             android:launchMode="singleTask"
             android:label="Organizer's Events"/>
-        <activity android:name=".ui.ViewEventActivity" />
+        <activity android:name=".ui.ViewEventActivity"
+            android:label="Event"/>
         <activity
             android:name=".ui.OrganizerProfileActivity"
             android:label="Organizer's Profile"

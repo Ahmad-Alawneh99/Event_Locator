@@ -24,7 +24,6 @@ class ParticipantPreviousEventsFragment(val events: ArrayList<Event>): Fragment(
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvents.layoutManager = layoutManager
-        binding.rvEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = OrganizerCanceledEventAdapter(events)
         binding.rvEvents.adapter = adapter
     }

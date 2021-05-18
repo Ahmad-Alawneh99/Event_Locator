@@ -112,6 +112,10 @@ class FilterUpcomingEventsFragment(var events: ArrayList<Event>): Fragment() {
             filter = FullFilter(binding.cbShowFullEvents.isChecked)
             result = filter.apply(result)
 
+            result = result.filter { event ->
+                event.canceledEventData==null
+            } as ArrayList<Event>
+
 
             activity.getUpcomingEvents(result)
 

@@ -379,6 +379,10 @@ class ViewEventActivity : AppCompatActivity() {
     }
 
     private fun updateRegisterButton(){
+        if (event.isCanceled()) {
+            binding.btnAction.visibility = View.INVISIBLE
+            return
+        }
         if (!event.isRegistrationClosed() && !event.isParticipantRegistered) {
             binding.btnAction.text = getString(R.string.register)
             binding.btnAction.setOnClickListener {

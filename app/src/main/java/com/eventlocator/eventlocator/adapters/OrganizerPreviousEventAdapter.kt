@@ -46,7 +46,7 @@ class OrganizerPreviousEventAdapter(private val events: ArrayList<Event>):
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
 
-        holder.binding.tvEventRating.text = events[position].rating.toString() + "/5"
+        holder.binding.tvEventRating.text = if (events[position].rating>0.0)events[position].rating.toString() + "/5" else "No ratings yet"
     }
 
     override fun getItemCount(): Int = events.size

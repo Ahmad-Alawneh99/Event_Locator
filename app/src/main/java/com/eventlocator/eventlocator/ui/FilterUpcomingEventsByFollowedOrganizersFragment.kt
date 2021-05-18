@@ -65,9 +65,9 @@ class FilterUpcomingEventsByFollowedOrganizersFragment(var events: ArrayList<Eve
             for(i in 0 until binding.cgDayOfWeek.size){
                 if ((binding.cgDayOfWeek[i] as Chip).isChecked){
                     if (i==0)
-                        selectedDays.add(6)
+                        selectedDays.add(7)
                     else
-                        selectedDays.add(i-1)
+                        selectedDays.add(i)
                 }
             }
 
@@ -93,6 +93,10 @@ class FilterUpcomingEventsByFollowedOrganizersFragment(var events: ArrayList<Eve
             result = filter.apply(result)
             filter = FullFilter(binding.cbShowFullEvents.isChecked)
             result = filter.apply(result)
+
+            result = result.filter { event ->
+                event.canceledEventData==null
+            } as ArrayList<Event>
             
             activity.getUpcomingEventsByFollowedOrganizers(result)
 

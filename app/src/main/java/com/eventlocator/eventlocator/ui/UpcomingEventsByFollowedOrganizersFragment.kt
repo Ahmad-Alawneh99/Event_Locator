@@ -55,8 +55,8 @@ class UpcomingEventsByFollowedOrganizersFragment: Fragment(), OnUpcomingEventsBy
                             events = response.body()!!
                             val initialEvents = ArrayList<Event>()
                             for (i in 0 until events.size) {
-                                if (events[i].isRegistrationClosed() &&
-                                        events[i].isFull() && events[i].canceledEventData==null) {
+                                if (!events[i].isRegistrationClosed() &&
+                                        !events[i].isFull() && events[i].canceledEventData==null) {
                                     initialEvents.add(events[i])
                                 }
                             }

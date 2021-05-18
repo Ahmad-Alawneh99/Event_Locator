@@ -30,7 +30,6 @@ class ParticipantUpcomingEventsFragment(val events: ArrayList<Event>): Fragment(
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvents.layoutManager = layoutManager
-
         val adapter = ParticipantUpcomingEventAdapter(events)
         binding.rvEvents.adapter = adapter
         binding.rvEvents.adapter!!.notifyDataSetChanged()

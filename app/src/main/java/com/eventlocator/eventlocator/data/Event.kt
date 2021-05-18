@@ -88,7 +88,8 @@ class Event(var id: Long, var name: String, var description: String, var categor
             else  "You attended this event"
         }
         else if (this.isParticipantRegistered){
-            "You are registered in this event"
+            if (isCanceled()) "You were registered in this event"
+            else "You are registered in this event"
         }
         else{
             ""
