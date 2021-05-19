@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.DividerItemDecoration
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.eventlocator.eventlocator.adapters.OrganizerCanceledEventAdapter
+import com.eventlocator.eventlocator.adapters.ParticipantCanceledEventAdapter
 import com.eventlocator.eventlocator.data.Event
 import com.eventlocator.eventlocator.databinding.FragmentEventsBinding
 import com.eventlocator.eventlocator.databinding.FragmentEventsWithFilteringBinding
@@ -15,6 +16,8 @@ import com.eventlocator.eventlocator.databinding.FragmentEventsWithFilteringBind
 class ParticipantCanceledEventsFragment(val events: ArrayList<Event>): Fragment() {
 
     lateinit var binding: FragmentEventsBinding
+
+    constructor(): this(ArrayList<Event>())
 
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentEventsBinding.inflate(layoutInflater, container, false)
@@ -25,7 +28,7 @@ class ParticipantCanceledEventsFragment(val events: ArrayList<Event>): Fragment(
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvents.layoutManager = layoutManager
-        val adapter = OrganizerCanceledEventAdapter(events)
+        val adapter = ParticipantCanceledEventAdapter(events)
         binding.rvEvents.adapter = adapter
     }
 }

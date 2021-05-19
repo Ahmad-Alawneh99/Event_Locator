@@ -29,11 +29,14 @@ class Event(var id: Long, var name: String, var description: String, var categor
                 return "Registration ongoing"
             }
         }
-        else if (isRegistrationClosed()){
-            "Registration closed"
-        }
         else if (getCurrentSession()!=null){
             "Session #"+getCurrentSession()!!.id+" is happening now"
+        }
+        else if (hasStarted()){
+            "This event is active"
+        }
+        else if (isRegistrationClosed()){
+            "Registration closed"
         }
         else{
             "This event is active"
@@ -80,8 +83,16 @@ class Event(var id: Long, var name: String, var description: String, var categor
         return this.maxParticipants!=-1 && this.maxParticipants == this.currentNumberOfParticipants
     }
 
+    fun hasStarted(): Boolean{
+        val eventStartDate = LocalDate.parse(startDate,
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT))
+        val eventStartDateTime = eventStartDate.atTime(LocalTime.parse(sessions[0].startTime,
+                DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT)))
+        return LocalDateTime.now().isAfter(eventStartDateTime)
+    }
+
     fun getCurrentParticipantStatus(): String{
-        return if (this.hasParticipantAttended == ParticipantAttendanceStatus.TRUE.ordinal){
+        return if (this.hasParticipantAttended == ParticipantAttendanceStatus.TRUE.ordinal && isFinished()){
             if (this.feedback!=null){
                 "You left feedback for the event"
             }

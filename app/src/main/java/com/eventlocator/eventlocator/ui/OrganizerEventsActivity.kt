@@ -103,6 +103,10 @@ class OrganizerEventsActivity : AppCompatActivity(), OnPreviousEventsFiltered {
 
     override fun getPreviousEvents(previousEvents: ArrayList<Event>) {
         onPreviousEventsReady.sendPreviousEvents(previousEvents)
+        supportFragmentManager.commit {
+            remove(filterFragment!!)
+            filterFragment = null
+        }
     }
 
      override fun onPrepareOptionsMenu(menu: Menu?): Boolean {

@@ -137,7 +137,7 @@ class ViewEventActivity : AppCompatActivity() {
                 .format(startDateFormatted) + " - " + DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY)
                 .format(endDateFormatted)
         binding.tvRating.text = if(event.isFinished()) {
-            if (event.rating == 0.0) "No ratings yet"
+            if (event.rating <= 0.0) "No ratings yet"
             else BigDecimal(event.rating).setScale(2).toString() + "/5"
         }
         else ""
@@ -159,6 +159,7 @@ class ViewEventActivity : AppCompatActivity() {
                 intent.putExtra("latLng", latLng)
                 startActivity(intent)
             }
+            binding.tvLocation.text = "Tap to view location"
         }
         else{
             binding.llCity.visibility = View.GONE
@@ -212,7 +213,7 @@ class ViewEventActivity : AppCompatActivity() {
                 val endDate = LocalDate.from(DateTimeFormatterFactory
                     .createDateTimeFormatter(DateTimeFormat.DATE_DEFAULT).parse(event.endDate))
                 val endTime = LocalTime.from(DateTimeFormatterFactory
-                    .createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT).parse(event.sessions[event.sessions.size].endTime))
+                    .createDateTimeFormatter(DateTimeFormat.TIME_DEFAULT).parse(event.sessions[event.sessions.size-1].endTime))
                 var ratingEndDateTime = endDate.atTime(endTime)
                 ratingEndDateTime = ratingEndDateTime.plusHours(48)
 
@@ -222,10 +223,13 @@ class ViewEventActivity : AppCompatActivity() {
                 else if(LocalDateTime.now().isBefore(ratingEndDateTime)){
                     menu?.add(1, rate_event_id, 1, "Rate event")
                 }
-                menu?.add(1, share_on_twitter_id, 3, "Share on Twitter")
+
             }
             if (event.isParticipantRegistered && !event.isFinished() && event.isLimitedLocated()) {
                 menu?.add(1, view_qr_codes_id, 2, "View QR codes")
+            }
+            if (event.isParticipantRegistered && !event.isFinished() && !event.isCanceled()){
+                menu?.add(1, share_on_twitter_id, 3, "Share on Twitter")
             }
         }
         return super.onCreateOptionsMenu(menu)
@@ -319,14 +323,12 @@ class ViewEventActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                     "Error", "Server issue, please try again later", false)
                         }
-                        binding.btnAction.visibility = View.VISIBLE
                         binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                 "Error", "Can't connect to the server", true)
-                        binding.btnAction.visibility = View.VISIBLE
                         binding.pbLoading.visibility = View.INVISIBLE
                     }
 
@@ -345,8 +347,10 @@ class ViewEventActivity : AppCompatActivity() {
                     override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                         if (response.code()==202){
                             event.isParticipantRegistered = false
+                            binding.btnAction.visibility = View.INVISIBLE
                             updateRegisterButton()
                             NotificationUtils.cancelNotification(this@ViewEventActivity, eventID)
+                            invalidateOptionsMenu()
                         }
                         else if (response.code()==401){
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity, "Error",
@@ -364,14 +368,12 @@ class ViewEventActivity : AppCompatActivity() {
                             Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                     "Error", "Server issue, please try again later", true)
                         }
-                        binding.btnAction.visibility = View.VISIBLE
                         binding.pbLoading.visibility = View.INVISIBLE
                     }
 
                     override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                         Utils.instance.displayInformationalDialog(this@ViewEventActivity,
                                 "Error", t.message!!.toString(), true)
-                        binding.btnAction.visibility = View.VISIBLE
                         binding.pbLoading.visibility = View.INVISIBLE
                     }
 
@@ -415,6 +417,9 @@ class ViewEventActivity : AppCompatActivity() {
             else{
                 binding.btnAction.visibility = View.INVISIBLE
             }
+        }
+        else{
+            binding.btnAction.visibility = View.INVISIBLE
         }
         updateParticipantStatus()
     }

@@ -9,7 +9,7 @@ class RegistrationClosedFilter(var requiresRegistrationClosed: Boolean): Filter 
         else{
             val result = ArrayList<Event>()
             for(i in 0 until events.size){
-                if (!events[i].isRegistrationClosed())
+                if (!events[i].isRegistrationClosed() && !events[i].hasStarted())
                     result.add(events[i])
             }
             return result

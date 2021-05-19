@@ -267,6 +267,8 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
         }
     }
 
+    fun isParticipantInitialized() = this::participant.isInitialized
+
 }
 
 interface OnUpcomingEventsReady{

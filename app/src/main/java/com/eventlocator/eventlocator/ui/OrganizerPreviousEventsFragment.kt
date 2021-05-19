@@ -14,7 +14,7 @@ import com.eventlocator.eventlocator.databinding.FragmentEventsWithFilteringBind
 class OrganizerPreviousEventsFragment(var events: ArrayList<Event>): Fragment(), OnPreviousEventsReady {
 
     lateinit var binding: FragmentEventsWithFilteringBinding
-
+    constructor(): this(ArrayList<Event>())
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentEventsWithFilteringBinding.inflate(layoutInflater, container, false)
         return binding.root

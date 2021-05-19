@@ -14,7 +14,7 @@ import com.eventlocator.eventlocator.databinding.FragmentEventsBinding
 class OrganizerCanceledEventsFragment(val events: ArrayList<Event>): Fragment() {
 
     lateinit var binding: FragmentEventsBinding
-
+    constructor(): this(ArrayList<Event>())
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentEventsBinding.inflate(layoutInflater, container, false)
         return binding.root
@@ -24,7 +24,6 @@ class OrganizerCanceledEventsFragment(val events: ArrayList<Event>): Fragment() 
         super.onViewCreated(view, savedInstanceState)
         val layoutManager = LinearLayoutManager(requireContext())
         binding.rvEvents.layoutManager = layoutManager
-        binding.rvEvents.addItemDecoration(DividerItemDecoration(requireContext(),layoutManager.orientation))
         val adapter = OrganizerCanceledEventAdapter(events)
         binding.rvEvents.adapter = adapter
     }

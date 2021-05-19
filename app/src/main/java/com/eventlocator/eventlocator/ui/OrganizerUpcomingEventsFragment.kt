@@ -19,7 +19,7 @@ import java.time.LocalTime
 class OrganizerUpcomingEventsFragment(val events: ArrayList<Event>): Fragment() {
 
     lateinit var binding: FragmentEventsBinding
-
+    constructor(): this(ArrayList<Event>())
     override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?): View {
         binding = FragmentEventsBinding.inflate(layoutInflater, container, false)
         return binding.root

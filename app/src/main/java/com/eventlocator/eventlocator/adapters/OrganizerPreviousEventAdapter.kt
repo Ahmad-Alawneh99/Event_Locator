@@ -10,6 +10,7 @@ import com.eventlocator.eventlocator.databinding.PreviousEventOrganizersProfileB
 import com.eventlocator.eventlocator.ui.ViewEventActivity
 import com.eventlocator.eventlocator.utilities.DateTimeFormat
 import com.eventlocator.eventlocator.utilities.DateTimeFormatterFactory
+import java.math.BigDecimal
 import java.time.LocalDate
 
 class OrganizerPreviousEventAdapter(private val events: ArrayList<Event>):
@@ -46,7 +47,7 @@ class OrganizerPreviousEventAdapter(private val events: ArrayList<Event>):
                 .format(startDate) + " - " +
                 DateTimeFormatterFactory.createDateTimeFormatter(DateTimeFormat.DATE_DISPLAY).format(endDate)
 
-        holder.binding.tvEventRating.text = if (events[position].rating>0.0)events[position].rating.toString() + "/5" else "No ratings yet"
+        holder.binding.tvEventRating.text = if (events[position].rating>0.0) BigDecimal(events[position].rating).setScale(2).toString() + "/5" else "No ratings yet"
     }
 
     override fun getItemCount(): Int = events.size

@@ -13,8 +13,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.EventLocator"
         android:usesCleartextTraffic="true">
-        <activity android:name=".ui.ViewMyFeedbackActivity"
-            android:label="Feedback"></activity>
+        <activity
+            android:name=".ui.ViewMyFeedbackActivity"
+            android:label="Feedback">
+        </activity>
 
         <service
             android:name=".utilities.MessagingService"
@@ -35,11 +37,7 @@
             android:theme="@style/Theme.EventLocator.NoActionBar" />
         <activity
             android:name=".ui.ViewLocationActivity"
-            android:parentActivityName=".ui.ViewEventActivity"
             android:label="View Location">
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.ViewEventActivity" />
         </activity>
         <activity android:name=".ui.QRCodesActivity"
             android:label="QRCodes"/>

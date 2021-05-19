@@ -42,7 +42,6 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         (activity as EventsActivity).onUpcomingEventsReady = this
-        participant = (activity as EventsActivity).participant
         getAndLoadEvents()
     }
 
@@ -54,6 +53,8 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
     }
 
     fun getAndLoadEvents(){
+        if (!(activity as EventsActivity).isParticipantInitialized())return
+        participant = (activity as EventsActivity).participant
         val token = requireContext().getSharedPreferences(SharedPreferenceManager.instance.SHARED_PREFERENCE_FILE,
                 Context.MODE_PRIVATE).getString(SharedPreferenceManager.instance.TOKEN_KEY, "EMPTY")
         RetrofitServiceFactory.createServiceWithAuthentication(EventService::class.java, token!!)
