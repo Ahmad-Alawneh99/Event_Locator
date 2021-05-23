@@ -117,7 +117,7 @@ class RateEventActivity : AppCompatActivity() {
 
 
     private fun updateSaveButton(){
-        binding.btnSave.isEnabled = binding.rbRating.rating >0.0
+        binding.btnSave.isEnabled = binding.rbRating.rating > 0.0
                 && binding.tlFeedback.error == null
                 && binding.etFeedback.text.toString().trim() != ""
     }
