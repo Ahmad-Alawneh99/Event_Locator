@@ -87,6 +87,9 @@ class UpcomingEventsFragment: Fragment(), OnUpcomingEventsReady {
                             Utils.instance.displayInformationalDialog(this@UpcomingEventsFragment.requireContext()
                                     , "Error", "401: Unauthorized access",true)
                         }
+                        else if (response.code()==404){
+                            events = ArrayList()
+                        }
                         else if (response.code()==500){
                             Utils.instance.displayInformationalDialog(this@UpcomingEventsFragment.requireContext(),
                                     "Error", "Server issue, please try again later",false)

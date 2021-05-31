@@ -128,7 +128,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
                         }
                     }
                     else{
-                        filterFragment = FilterUpcomingEventsByFollowedOrganizersFragment(pagerAdapter.upcomingEventsFragment.events)
+                        filterFragment = FilterUpcomingEventsByFollowedOrganizersFragment(pagerAdapter.upcomingEventsByFollowedOrganizersFragment.events)
                         supportFragmentManager.commit {
                             add(R.id.fvFilter,filterFragment!!)
                         }
@@ -208,7 +208,6 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
             }
 
         }.attach()
-
         binding.pagerEvents.registerOnPageChangeCallback(object: ViewPager2.OnPageChangeCallback(){
             override fun onPageSelected(position: Int) {
                 super.onPageSelected(position)
@@ -265,6 +264,7 @@ class EventsActivity : AppCompatActivity(), OnUpcomingEventsFiltered, OnUpcoming
             }
 
         }
+        pagerAdapter.requestEventsUpdate()
     }
 
     fun isParticipantInitialized() = this::participant.isInitialized
